@@ -6,11 +6,11 @@ import { ArrowLeft } from "lucide-react"
 import { NewspaperHeader } from "@/components/newspaper-header"
 import { DateDisplay } from "@/components/date-display"
 
-interface BlogPostPageProps {
-  params: {
-    id: string
-  }
-}
+// interface BlogPostPageProps {
+//   params: {
+//     id: string
+//   }
+// }
 //{ params }: BlogPostPageProps
 export default function BlogPostPage() {
   // In a real app, you would fetch this data from your database based on the ID
