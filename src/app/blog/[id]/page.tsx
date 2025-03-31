@@ -11,8 +11,8 @@ interface BlogPostPageProps {
     id: string
   }
 }
-
-export default function BlogPostPage({ params }: BlogPostPageProps) {
+//{ params }: BlogPostPageProps
+export default function BlogPostPage() {
   // In a real app, you would fetch this data from your database based on the ID
   const post = {
     // id: params?.id, commented
