@@ -70,7 +70,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           <Badge variant="outline" className="rounded-none uppercase font-bold border-black">
             {post?.category}
           </Badge>
-          {post.tags.map((tag) => (
+          {post?.tags.map((tag) => (
             <Badge key={tag} variant="secondary" className="rounded-none">
               {tag}
             </Badge>
