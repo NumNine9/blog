@@ -7,7 +7,7 @@ import { WeatherWidget } from "@/components/weather-widget"
 import { DateDisplay } from "@/components/date-display"
 
 export default function Home() {
-  // In a real app, you would fetch this data from your database
+  // In a real app, you would fetch this data from your database yes
   const blogPosts = [
     {
       id: "1",

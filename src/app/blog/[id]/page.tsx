@@ -15,7 +15,8 @@ interface BlogPostPageProps {
 export default function BlogPostPage({ params }: BlogPostPageProps) {
   // In a real app, you would fetch this data from your database based on the ID
   const post = {
-    id: params?.id,
+    // id: params?.id, commented
+    id: 1 ,
     title: "NEXT.JS FRAMEWORK REVOLUTIONIZES WEB DEVELOPMENT",
     subtitle: "Developers worldwide adopt new technology at unprecedented rates",
     content: `
