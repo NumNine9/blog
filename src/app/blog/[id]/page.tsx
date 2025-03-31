@@ -15,7 +15,7 @@ interface BlogPostPageProps {
 export default function BlogPostPage({ params }: BlogPostPageProps) {
   // In a real app, you would fetch this data from your database based on the ID
   const post = {
-    id: params.id,
+    id: params?.id,
     title: "NEXT.JS FRAMEWORK REVOLUTIONIZES WEB DEVELOPMENT",
     subtitle: "Developers worldwide adopt new technology at unprecedented rates",
     content: `
@@ -68,7 +68,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
       <article className="max-w-4xl mx-auto font-serif">
         <div className="flex flex-wrap gap-2 mb-4">
           <Badge variant="outline" className="rounded-none uppercase font-bold border-black">
-            {post.category}
+            {post?.category}
           </Badge>
           {post.tags.map((tag) => (
             <Badge key={tag} variant="secondary" className="rounded-none">
@@ -81,19 +81,19 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           {post.title}
         </h1>
 
-        <h2 className="text-xl md:text-2xl font-medium italic mb-6">{post.subtitle}</h2>
+        <h2 className="text-xl md:text-2xl font-medium italic mb-6">{post?.subtitle}</h2>
 
         <div className="flex items-center justify-between text-sm mb-6 border-b border-t border-black py-2">
           <div>
-            By <span className="font-semibold uppercase">{post.author}</span>, Staff Reporter
+            By <span className="font-semibold uppercase">{post?.author}</span>, Staff Reporter
           </div>
           <time className="italic">{new Date(post.date).toLocaleDateString()}</time>
         </div>
 
         <div className="relative w-full mb-8">
           <Image
-            src={post.imageUrl || "/placeholder.svg"}
-            alt={post.title}
+            src={post?.imageUrl || "/placeholder.svg"}
+            alt={post?.title}
             width={800}
             height={400}
             className="w-full grayscale"
@@ -105,11 +105,11 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
         <div
           className="prose prose-lg max-w-none font-serif prose-headings:font-serif prose-headings:uppercase prose-headings:font-bold"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: post?.content }}
         />
 
         <div className="mt-8 pt-4 border-t border-black text-sm italic">
-          This article first appeared in The Daily Blog on {new Date(post.date).toLocaleDateString()}
+          This article first appeared in The Daily Blog on {new Date(post?.date).toLocaleDateString()}
         </div>
       </article>
     </main>
