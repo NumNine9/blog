@@ -26,7 +26,7 @@ const specialElite = Special_Elite({
 })
 
 export const metadata: Metadata = {
-  title: "The Daily Blog - Vintage Newspaper Style",
+  title: "The Commit Log - Vintage Newspaper Style",
   description: "A blog with classic 1970s-1980s newspaper styling",
 }
 

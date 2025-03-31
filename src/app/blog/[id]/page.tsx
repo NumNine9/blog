@@ -110,7 +110,7 @@ export default function BlogPostPage() {
         />
 
         <div className="mt-8 pt-4 border-t border-black text-sm italic">
-          This article first appeared in The Daily Blog on {new Date(post?.date).toLocaleDateString()}
+          This article first appeared in The Commit Log on {new Date(post?.date).toLocaleDateString()}
         </div>
       </article>
     </main>
