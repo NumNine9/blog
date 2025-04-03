@@ -13,10 +13,10 @@ export default async function handler() {
   });
 
   // Only use for admin actions (bypasses RLS!)
-  const { data, error } = await supabase
-    .from('users')
-    .delete()
-    .eq('id', '123');
+  // const { data, error } = await supabase
+  //   .from('users')
+  //   .delete()
+  //   .eq('id', '123');
 
 //   res.status(200).json({ data });
 }

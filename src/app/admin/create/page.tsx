@@ -11,20 +11,20 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TagInput } from "@/components/tag-input"
 import { NewspaperHeader } from "@/components/newspaper-header"
-import { addBlogPost, BlogPost, supabase } from "@/lib/supabase"
+import { BlogPost, supabase } from "@/lib/supabase"
 
 export default function CreateBlogPost() {
   const router = useRouter()
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState("");
-  const [imageURL, setImageURL] = useState("");
+  // const [imageURL, setImageURL] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>('');
     const [loading, setLoading] = useState(true);
     useEffect(() => {
       const checkUser = async () => {
@@ -44,13 +44,13 @@ export default function CreateBlogPost() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-
+    // setImage
     // In a real app, you would send this data to your API
     const newPost: BlogPost = {
       title: title,
       author: user?.id,
       category: category,
-      imageURL: imageURL,
+      imageURL: '',
       tags: tags,
       excerpt: excerpt,
       content: content,

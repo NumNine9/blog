@@ -77,7 +77,7 @@ export default function Home() {
         </Button> */}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {loading? '': <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Featured article - spans 8 columns */}
         <div className="lg:col-span-8 border-r border-gray-400 pr-6">
           <BlogArticle post={blogPosts[0]} featured={true} />
@@ -89,7 +89,7 @@ export default function Home() {
             <BlogArticle key={post.id} post={post} featured={false} />
           ))}
         </div>
-      </div>
+      </div>}
 
       <div className="mt-8 flex justify-center">
         <PaginationDemo />

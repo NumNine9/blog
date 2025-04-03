@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { signIn, signUp } from "@/lib/supabase"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 
 export default function AuthForm() {
-  const router = useRouter()
+  // const router = useRouter()
   const [isSignIn, setIsSignIn] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")

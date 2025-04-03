@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Mail, RefreshCw } from "lucide-react"
+import Link from "next/link"
 
 export default function EmailConfirmation({ email = "YOUR@EMAIL.COM" }) {
   const [isResending, setIsResending] = useState(false)
@@ -78,13 +79,14 @@ export default function EmailConfirmation({ email = "YOUR@EMAIL.COM" }) {
             </Button>
           </div>
 
-          <div>
-            <a
+          <div className="text-purple-800 font-bold underline decoration-wavy decoration-pink-500 underline-offset-4 uppercase hover:text-purple-900">
+          <Link href="/">BACK TO ACCESS PAGE</Link>
+            {/* <a
               href="/"
               className="text-purple-800 font-bold underline decoration-wavy decoration-pink-500 underline-offset-4 uppercase hover:text-purple-900"
             >
-              BACK TO ACCESS PAGE
-            </a>
+              
+            </a> */}
           </div>
         </div>
 
