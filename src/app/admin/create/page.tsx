@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TagInput } from "@/components/tag-input"
 import { NewspaperHeader } from "@/components/newspaper-header"
 import { BlogPost, supabase } from "@/lib/supabase"
+import { User } from "@supabase/supabase-js"
 
 export default function CreateBlogPost() {
   const router = useRouter()
@@ -24,7 +25,7 @@ export default function CreateBlogPost() {
   const [content, setContent] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [user, setUser] = useState<any>('');
+  const [user, setUser] = useState<User>();
     const [loading, setLoading] = useState(true);
     useEffect(() => {
       const checkUser = async () => {
@@ -48,7 +49,7 @@ export default function CreateBlogPost() {
     // In a real app, you would send this data to your API
     const newPost: BlogPost = {
       title: title,
-      author: user?.id,
+      author: author,
       category: category,
       imageURL: '',
       tags: tags,

@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function Home() {
-  const [user, setUser] = useState<{}>();
+  const [user, setUser] = useState<{}>({});
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const checkUser = async () => {
