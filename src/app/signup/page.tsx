@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { signIn, signUp } from "@/lib/supabase"
-// import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 export default function AuthForm() {
-  // const router = useRouter()
+  const router = useRouter()
   const [isSignIn, setIsSignIn] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -37,9 +37,10 @@ export default function AuthForm() {
       } else {
         alert(isSignIn ? "Login successful!" : "Signup successful! Check your email.");
         if(isSignIn){
-          window.location.href = "/admin/create"; // Redirect after success
+          router.push("/admin/create"); // Redirect after success
         }else{
-          window.location.href = "/confirm";
+          // window.location.href = 
+          router.push("/confirm");
         }
         
         // router.push("/admin/create")
