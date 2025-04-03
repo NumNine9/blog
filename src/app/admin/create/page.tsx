@@ -28,7 +28,7 @@ export default function CreateBlogPost() {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
       const checkUser = async () => {
-        const { data, error } = await supabase.auth.getUser();
+        const { data } = await supabase.auth.getUser();
         if (data?.user) {
           setUser(data.user);
         }else{
@@ -63,7 +63,8 @@ export default function CreateBlogPost() {
     // await new Promise((resolve) => setTimeout(resolve, 1000))
     // const result = await addBlogPost(newPost);
     try{
-      const { data, error } = await supabase.from('blogPosts').insert([newPost]).select()
+      // const { data, error } = 
+      await supabase.from('blogPosts').insert([newPost]).select()
       alert("Post added successfully!");
       router.push("/")
     }catch(err){
@@ -214,7 +215,7 @@ export default function CreateBlogPost() {
               disabled={isSubmitting}
               className="rounded-none bg-black text-white hover:bg-gray-800"
             >
-              {isSubmitting ? "Publishing..." : "Publish Article"}
+              {isSubmitting || loading ? "Publishing..." : "Publish Article"}
             </Button>
           </div>
         </form>

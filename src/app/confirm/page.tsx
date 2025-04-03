@@ -38,7 +38,7 @@ export default function EmailConfirmation({ email = "YOUR@EMAIL.COM" }) {
           <h2 className="text-2xl font-bold text-center uppercase tracking-widest text-purple-800">
             CHECK YOUR MAILBOX!
           </h2>
-          <p className="text-center text-purple-800 font-bold">WE'VE SENT YOU A SPECIAL INVITATION</p>
+          <p className="text-center text-purple-800 font-bold">WE HAVE SENT YOU A SPECIAL INVITATION</p>
         </div>
 
         <div className="flex justify-center my-8">
@@ -48,7 +48,7 @@ export default function EmailConfirmation({ email = "YOUR@EMAIL.COM" }) {
         </div>
 
         <div className="bg-yellow-100 border-4 border-purple-800 p-4 text-center mb-6">
-          <p className="text-purple-800 font-bold uppercase">WE'VE SENT A CONFIRMATION TO:</p>
+          <p className="text-purple-800 font-bold uppercase">WE HAVE SENT A CONFIRMATION TO:</p>
           <p className="text-xl font-bold text-purple-800 mt-2 break-all">{email}</p>
         </div>
 
