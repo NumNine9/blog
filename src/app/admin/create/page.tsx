@@ -19,7 +19,7 @@ export default function CreateBlogPost() {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState("");
-  // const [imageURL, setImageURL] = useState("");
+  const [imageURL, setImageURL] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
@@ -51,7 +51,7 @@ export default function CreateBlogPost() {
       title: title,
       author: author,
       category: category,
-      imageURL: '',
+      imageURL: imageURL,
       tags: tags,
       excerpt: excerpt,
       content: content,
@@ -63,32 +63,32 @@ export default function CreateBlogPost() {
     // Simulate API call
     // await new Promise((resolve) => setTimeout(resolve, 1000))
     // const result = await addBlogPost(newPost);
-    try{
-      // const { data, error } = 
-      await supabase.from('blogPosts').insert([newPost]).select()
-      alert("Post added successfully!");
-      router.push("/")
-    }catch(err){
-      alert("Error adding post!");
-      console.log(err)
-    }
-    // const { data, error } = await supabase.from('blogPosts').insert([newPost]).select()
-        
-    // if (data) {
+    // try{
+    //   // const { data, error } = 
+    //   await supabase.from('blogPosts').insert([newPost]).select()
     //   alert("Post added successfully!");
-    //   // Reset form
-    //   setTitle("");
-    //   setAuthor("");
-    //   setCategory("");
-    //   setImageURL("");
-    //   setTags([]);
-    //   setExcerpt("");
-    //   setContent("");
-    //   setSubtitle("");
-    // } else {
+    //   router.push("/")
+    // }catch(err){
     //   alert("Error adding post!");
-    //   console.log(error)
+    //   console.log(err)
     // }
+    const { data, error } = await supabase.from('blogPosts').insert([newPost]).select()
+        
+    if (data) {
+      alert("Post added successfully!");
+      // Reset form
+      setTitle("");
+      setAuthor("");
+      setCategory("");
+      setImageURL("");
+      setTags([]);
+      setExcerpt("");
+      setContent("");
+      setSubtitle("");
+    } else {
+      alert("Error adding post!");
+      console.log(error)
+    }
 
     setIsSubmitting(false)
     // router.push("/")
