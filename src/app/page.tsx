@@ -8,9 +8,10 @@ import { WeatherWidget } from "@/components/weather-widget"
 import { DateDisplay } from "@/components/date-display"
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js"
 
 export default function Home() {
-  const [user, setUser] = useState<{}>({});
+  const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const checkUser = async () => {
