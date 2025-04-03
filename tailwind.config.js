@@ -49,11 +49,41 @@ module.exports = {
             DEFAULT: "hsl(var(--card))",
             foreground: "hsl(var(--card-foreground))",
           },
+            // 70s-80s magazine colors
+          purple: {
+            800: "#5D1D90",
+            900: "#4A1773",
+          },
+          yellow: {
+            100: "#FFF9C4",
+            400: "#FFEE58",
+          },
+          pink: {
+            100: "#FCE4EC",
+            500: "#EC407A",
+          },
+          cyan: {
+            300: "#4DD0E1",
+          },
         },
         borderRadius: {
           lg: "var(--radius)",
           md: "calc(var(--radius) - 2px)",
           sm: "calc(var(--radius) - 4px)",
+        },
+        keyframes: {
+          "accordion-down": {
+            from: { height: "0" },
+            to: { height: "var(--radix-accordion-content-height)" },
+          },
+          "accordion-up": {
+            from: { height: "var(--radix-accordion-content-height)" },
+            to: { height: "0" },
+          },
+        },
+        animation: {
+          "accordion-down": "accordion-down 0.2s ease-out",
+          "accordion-up": "accordion-up 0.2s ease-out",
         },
         fontFamily: {
           sans: ["var(--font-inter)"],

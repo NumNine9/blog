@@ -6,7 +6,7 @@ export function NewspaperHeader() {
         <div className="flex justify-center items-center gap-4 text-sm">
           <span>TRUTH IN TECHNOLOGY</span>
           <span className="w-2 h-2 bg-black rounded-full"></span>
-          <span>SINCE 2023</span>
+          <span>SINCE 2025</span>
         </div>
       </header>
     )

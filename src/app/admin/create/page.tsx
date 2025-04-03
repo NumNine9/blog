@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,37 +11,85 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TagInput } from "@/components/tag-input"
 import { NewspaperHeader } from "@/components/newspaper-header"
+import { addBlogPost, BlogPost, supabase } from "@/lib/supabase"
 
 export default function CreateBlogPost() {
   const router = useRouter()
-  const [title, setTitle] = useState("")
-  const [subtitle, setSubtitle] = useState("")
-  const [content, setContent] = useState("")
-  const [excerpt, setExcerpt] = useState("")
-  const [category, setCategory] = useState("")
-  const [tags, setTags] = useState<string[]>([])
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [category, setCategory] = useState("");
+  const [imageURL, setImageURL] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [excerpt, setExcerpt] = useState("");
+  const [content, setContent] = useState("");
+  const [subtitle, setSubtitle] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false)
-
+  const [user, setUser] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+      const checkUser = async () => {
+        const { data, error } = await supabase.auth.getUser();
+        if (data?.user) {
+          setUser(data.user);
+        }else{
+          console.error("User is not logged in.");
+          alert("Please log in to add a blog post.");
+          return;
+        }
+        setLoading(false);
+      };
+  
+      checkUser();
+    }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
     // In a real app, you would send this data to your API
-    console.log({
-      title,
-      subtitle,
-      content,
-      excerpt,
-      category,
-      tags,
-      date: new Date().toISOString(),
-    })
+    const newPost: BlogPost = {
+      title: title,
+      author: user?.id,
+      category: category,
+      imageURL: imageURL,
+      tags: tags,
+      excerpt: excerpt,
+      content: content,
+      subtitle: subtitle,
+      // created_at: new Date().toISOString(), // Optional, Supabase can auto-generate this
+    };
+    console.log(newPost)
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // await new Promise((resolve) => setTimeout(resolve, 1000))
+    // const result = await addBlogPost(newPost);
+    try{
+      const { data, error } = await supabase.from('blogPosts').insert([newPost]).select()
+      alert("Post added successfully!");
+      router.push("/")
+    }catch(err){
+      alert("Error adding post!");
+      console.log(err)
+    }
+    // const { data, error } = await supabase.from('blogPosts').insert([newPost]).select()
+        
+    // if (data) {
+    //   alert("Post added successfully!");
+    //   // Reset form
+    //   setTitle("");
+    //   setAuthor("");
+    //   setCategory("");
+    //   setImageURL("");
+    //   setTags([]);
+    //   setExcerpt("");
+    //   setContent("");
+    //   setSubtitle("");
+    // } else {
+    //   alert("Error adding post!");
+    //   console.log(error)
+    // }
 
     setIsSubmitting(false)
-    router.push("/")
+    // router.push("/")
   }
 
   return (
@@ -52,7 +100,9 @@ export default function CreateBlogPost() {
         <h1 className="text-3xl font-bold mb-8 font-serif uppercase border-b-2 border-black pb-2">
           Submit New Article
         </h1>
-
+        <h1 className="text-3xl font-bold mb-8 font-serif uppercase border-b-2 border-black pb-2">
+          {user?.email}
+        </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="title" className="font-serif text-lg">
@@ -90,6 +140,20 @@ export default function CreateBlogPost() {
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
               placeholder="The opening paragraph that summarizes the article"
+              className="font-serif rounded-none border-black"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="author" className="font-serif text-lg">
+              Author
+            </Label>
+            <Textarea
+              id="author"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="Enter author name"
               className="font-serif rounded-none border-black"
               required
             />
