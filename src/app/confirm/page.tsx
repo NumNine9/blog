@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Mail, RefreshCw } from "lucide-react"
 import Link from "next/link"
 
-export default function EmailConfirmation({ email = "YOUR@EMAIL.COM" }) {
+export default function EmailConfirmation() {
   const [isResending, setIsResending] = useState(false)
   const [resendSuccess, setResendSuccess] = useState(false)
-
+  const email = "YOUR@EMAIL.COM" 
   const handleResend = async () => {
     setIsResending(true)
 
