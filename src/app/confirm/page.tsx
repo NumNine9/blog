@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Mail, RefreshCw } from "lucide-react"
-import Link from "next/link"
+// import Link from "next/link"
 
 export default function EmailConfirmation() {
   const [isResending, setIsResending] = useState(false)
