@@ -14,7 +14,7 @@ import { BlogPost, supabase } from "@/lib/supabase"
 //   }
 // }
 //{ params }: BlogPostPageProps
-export default async function BlogPostPage( params: { id: string }) {
+export default async function BlogPostPage({ params }: { params: { id: string } }) {
   
 // Fetch the specific blog post
   const { data } = await supabase
