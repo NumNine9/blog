@@ -1,3 +1,4 @@
+'use client';
 import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -6,7 +7,7 @@ import { ArrowLeft } from "lucide-react"
 import { NewspaperHeader } from "@/components/newspaper-header"
 import { DateDisplay } from "@/components/date-display"
 import { BlogPost, supabase } from "@/lib/supabase"
-
+import { useEffect, useState } from 'react';
 
 // interface BlogPostPageProps {
 //   params: {
@@ -14,17 +15,51 @@ import { BlogPost, supabase } from "@/lib/supabase"
 //   }
 // }
 //{ params }: BlogPostPageProps
-export default async function BlogPostPage({ params }: { params: { id: string } }) {
-  
+export default function BlogPostPage({ params }: { params: { id: string } }) {
+  const [blog, setBlog] = useState<BlogPost>();
 // Fetch the specific blog post
-  const { data } = await supabase
-    .from('blogPosts')
-    .select('*')
-    .eq('id', params.id)
-    .single()
+useEffect(() => {
+  async function loadBlog() {
+    try {
+      // setLoading(true);
+      // setError(null);
+      
+      const { data, error: supabaseError } = await supabase
+        .from('blogPosts')
+        .select('*')
+        .eq('id', params.id)
+        .single();
+
+      if (supabaseError) {
+        throw supabaseError;
+      }
+
+      if (data) {
+        setBlog(data as BlogPost);
+      } else {
+        alert('Blog post not found');
+      }
+    } catch (err) {
+      console.error('Error loading blog post:', err);
+      alert('Failed to load blog post');
+      // setBlog(null);
+    } finally {
+      // setLoading(false);
+    }
+  }
+
+  if (params?.id) {
+    loadBlog();
+  }
+}, [params?.id]);
+  // const { data } = await supabase
+  //   .from('blogPosts')
+  //   .select('*')
+  //   .eq('id', params.id)
+  //   .single()
 
   // setBlog(data)
-  const blog: BlogPost = data
+  // const blog: BlogPost = data
 
   
   return (
