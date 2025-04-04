@@ -69,6 +69,7 @@ export default function CreateBlogPost() {
   
       checkUser();
     }, []);
+  console.log(user)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
