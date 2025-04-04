@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { NewspaperHeader } from "@/components/newspaper-header"
 import { DateDisplay } from "@/components/date-display"
+import { BlogPost, supabase } from "@/lib/supabase"
+
 
 // interface BlogPostPageProps {
 //   params: {
@@ -12,44 +14,19 @@ import { DateDisplay } from "@/components/date-display"
 //   }
 // }
 //{ params }: BlogPostPageProps
-export default function BlogPostPage() {
-  // In a real app, you would fetch this data from your database based on the ID
-  const post = {
-    // id: params?.id, commented
-    id: 1 ,
-    title: "NEXT.JS FRAMEWORK REVOLUTIONIZES WEB DEVELOPMENT",
-    subtitle: "Developers worldwide adopt new technology at unprecedented rates",
-    content: `
-      <p class="text-lg font-bold first-letter:text-5xl first-letter:font-bold first-letter:mr-2 first-letter:float-left">Next.js is rapidly becoming the framework of choice for modern web applications, offering developers a powerful set of tools to create dynamic, interactive websites with minimal configuration.</p>
-      
-      <p>Industry experts note that the framework's server-side rendering capabilities provide significant advantages for both performance and search engine optimization, making it an attractive option for businesses looking to establish a strong online presence.</p>
-      
-      <p>"We've seen a 40% improvement in load times since migrating to Next.js," reports Jane Smith, CTO of TechCorp Industries. "Our customers have noticed the difference, and our conversion rates have improved accordingly."</p>
-      
-      <h2 class="text-2xl font-bold mt-6 mb-4 uppercase">KEY FEATURES DRIVING ADOPTION</h2>
-      
-      <p>The framework's popularity can be attributed to several key features:</p>
-      
-      <ul class="list-disc pl-5 my-4 space-y-2">
-        <li>File-system based routing that simplifies navigation structure</li>
-        <li>Server-side rendering for improved performance and SEO</li>
-        <li>Automatic code splitting to reduce initial load times</li>
-        <li>Built-in CSS and Sass support for streamlined styling</li>
-        <li>Fast refresh capabilities that enhance the development experience</li>
-        <li>API routes that facilitate backend functionality</li>
-      </ul>
-      
-      <p>These features combine to create a development experience that many find superior to traditional approaches, leading to faster development cycles and more robust applications.</p>
-      
-      <p>As web technologies continue to evolve, frameworks like Next.js are expected to play an increasingly important role in shaping the digital landscape. With strong community support and regular updates from its maintainers, Next.js appears poised to remain at the forefront of web development for years to come.</p>
-    `,
-    date: "2023-10-15",
-    author: "Jane Doe",
-    category: "Technology",
-    tags: ["Next.js", "React", "JavaScript"],
-    imageUrl: "/placeholder.svg?height=400&width=800",
-  }
+export default async function BlogPostPage({params}: {  params: { id: string }}) {
+  
+// Fetch the specific blog post
+  const { data } = await supabase
+    .from('blogPosts')
+    .select('*')
+    .eq('id', params.id)
+    .single()
 
+  // setBlog(data)
+  const blog: BlogPost = data
+
+  
   return (
     <main className="max-w-[1200px] mx-auto px-4 py-8 bg-[#f9f7f1]">
       <NewspaperHeader />
@@ -69,9 +46,9 @@ export default function BlogPostPage() {
       <article className="max-w-4xl mx-auto font-serif">
         <div className="flex flex-wrap gap-2 mb-4">
           <Badge variant="outline" className="rounded-none uppercase font-bold border-black">
-            {post?.category}
+            {blog?.category}
           </Badge>
-          {post?.tags.map((tag) => (
+          {blog?.tags.map((tag) => (
             <Badge key={tag} variant="secondary" className="rounded-none">
               {tag}
             </Badge>
@@ -79,22 +56,22 @@ export default function BlogPostPage() {
         </div>
 
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight mb-4 font-serif">
-          {post.title}
+          {blog?.title}
         </h1>
 
-        <h2 className="text-xl md:text-2xl font-medium italic mb-6">{post?.subtitle}</h2>
+        <h2 className="text-xl md:text-2xl font-medium italic mb-6">{blog?.subtitle}</h2>
 
         <div className="flex items-center justify-between text-sm mb-6 border-b border-t border-black py-2">
           <div>
-            By <span className="font-semibold uppercase">{post?.author}</span>, Staff Reporter
+            By <span className="font-semibold uppercase">{blog?.author}</span>, Staff Reporter
           </div>
-          <time className="italic">{new Date(post.date).toLocaleDateString()}</time>
+          <time className="italic">{blog?.created_at}</time>
         </div>
 
         <div className="relative w-full mb-8">
           <Image
-            src={post?.imageUrl || "/placeholder.svg"}
-            alt={post?.title}
+            src={blog?.imageUrl || "/placeholder.svg"}
+            alt={blog?.created_at || "/placeholder.svg"}
             width={800}
             height={400}
             className="w-full grayscale"
@@ -106,7 +83,7 @@ export default function BlogPostPage() {
 
         <div
           className="prose prose-lg max-w-none font-serif prose-headings:font-serif prose-headings:uppercase prose-headings:font-bold"
-          dangerouslySetInnerHTML={{ __html: post?.content }}
+          dangerouslySetInnerHTML={{ __html: blog?.content || "no content" }}
         />
 
         <div className="mt-8 pt-4 border-t border-black text-sm italic">

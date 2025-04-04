@@ -4,16 +4,23 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 // const SUPABASE_SERVICE_ROLE_KEY=process.env.SUPABASE_SERVICE_ROLE_KEY; // Not exposed to browser!
 export type BlogPost = {
-    title: string;
-    author: string;
-    category: string;
-    imageURL: string;
-    tags: string[];
-    excerpt: string;
-    content: string;
-    subtitle: string;
-    // created_at?: string; // Optional since Supabase can auto-generate timestamps
-  };
+  id: number;
+  created_at?: string; // Supabase automatic timestamp
+  updated_at?: string; // Supabase automatic timestamp
+  title: string;
+  subtitle: string;
+  content: string;
+  excerpt: string;
+  // date: string; // Consider using ISO string format: `${number}-${number}-${number}`
+  author: string;
+  category: string; // Specific categories if limited
+  tags: Array<string>; // Common tags if known
+  imageUrl: string;
+  // Metadata fields
+  published?: boolean;
+  views?: number;
+  // slug?: string;
+};
 
 export type BlogFormData = {
   title: string;
