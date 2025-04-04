@@ -11,7 +11,7 @@ interface Post {
   author: string
   category: string
   tags: string[]
-  imageUrl: string
+  imageURL: string
 }
 
 interface BlogCardProps {
@@ -22,7 +22,7 @@ export function BlogCard({ post }: BlogCardProps) {
   return (
     <Card className="overflow-hidden flex flex-col h-full">
       <div className="relative h-48 w-full">
-        <Image src={post.imageUrl || "/pic.jpg"} alt={post.title} fill className="object-cover" />
+        <Image src={post.imageURL || "/pic.jpg"} alt={post.title} fill className="object-cover" />
       </div>
       <CardHeader>
         <div className="flex justify-between items-start">

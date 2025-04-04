@@ -51,7 +51,7 @@ export default function CreateBlogPost() {
       title: title,
       author: author,
       category: category,
-      imageUrl: imageURL,
+      imageURL: imageURL,
       tags: tags,
       excerpt: excerpt,
       content: content,

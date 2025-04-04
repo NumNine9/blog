@@ -15,7 +15,7 @@ export type BlogPost = {
   author: string;
   category: string; // Specific categories if limited
   tags: Array<string>; // Common tags if known
-  imageUrl: string;
+  imageURL: string;
   // Metadata fields
   published?: boolean;
   views?: number;

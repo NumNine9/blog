@@ -107,7 +107,7 @@ useEffect(() => {
 
         <div className="relative w-full mb-8">
           <Image
-            src={blog?.imageUrl || altPic}
+            src={blog?.imageURL || altPic}
             alt={blog?.created_at || altPic}
             width={800}
             height={400}
