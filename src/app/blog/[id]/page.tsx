@@ -9,13 +9,13 @@ import { DateDisplay } from "@/components/date-display"
 import { BlogPost, supabase } from "@/lib/supabase"
 import { useEffect, useState } from 'react';
 
-// interface BlogPostPageProps {
-//   params: {
-//     id: string
-//   }
-// }
-//{ params }: BlogPostPageProps
-export default function BlogPostPage({ params }: { params: { id: string } }) {
+interface BlogPostPageProps {
+  params: {
+    id: string
+  }
+}
+// { params }: BlogPostPageProps
+export default function BlogPostPage({ params }: BlogPostPageProps) {
   const [blog, setBlog] = useState<BlogPost>();
 // Fetch the specific blog post
 useEffect(() => {
