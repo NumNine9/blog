@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TagInput } from "@/components/tag-input"
 import { NewspaperHeader } from "@/components/newspaper-header"
-import { BlogPost, supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/supabase"
 import { User } from "@supabase/supabase-js"
 
 export default function CreateBlogPost() {
