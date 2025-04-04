@@ -47,18 +47,19 @@ export default function CreateBlogPost() {
     setIsSubmitting(true)
     // setImage
     // In a real app, you would send this data to your API
-    const newPost: BlogPost = {
+    const newPost = {
       title: title,
       author: author,
       category: category,
-      imageURL: imageURL,
+      imageUrl: imageURL,
       tags: tags,
       excerpt: excerpt,
       content: content,
       subtitle: subtitle,
-      // created_at: new Date().toISOString(), // Optional, Supabase can auto-generate this
+      // created_at: new Date().toISOString(), // Optional, Supabase can auto-generate thi
+      // //some random text
     };
-    console.log(newPost)
+    console.log('NEWPOST',newPost)
 
     // Simulate API call
     // await new Promise((resolve) => setTimeout(resolve, 1000))
