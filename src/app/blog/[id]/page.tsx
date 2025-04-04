@@ -9,6 +9,7 @@ import { DateDisplay } from "@/components/date-display"
 import { BlogPost, supabase } from "@/lib/supabase"
 import { use, useEffect, useState } from 'react';
 import { altPic } from "@/components/blog-article";
+import toast, { Toaster } from "react-hot-toast";
 
 // interface BlogPostPageProps {
 //   params: {
@@ -39,11 +40,63 @@ useEffect(() => {
       if (data) {
         setBlog(data as BlogPost);
       } else {
-        alert('Blog post not found');
+        // alert('Blog post not found');
+        toast.error('Blog post not found', {
+          duration: 4000,
+          position: 'bottom-center',
+        
+          // Styling
+          style: { backgroundColor: '#fc5659'},
+          className: '',
+        
+          // Custom Icon
+          icon: '❌',
+        
+          // Change colors of success/error/loading icon
+          iconTheme: {
+            primary: '#99f598',
+            secondary: '#99f598',
+          },
+        
+          // Aria
+          ariaProps: {
+            role: 'status',
+            'aria-live': 'polite',
+          },
+        
+          // Additional Configuration
+          removeDelay: 2000,
+        });
       }
     } catch (err) {
       console.error('Error loading blog post:', err);
-      alert('Failed to load blog post');
+      // alert('Failed to load blog post');
+      toast.error('Failed to load blog post', {
+        duration: 4000,
+        position: 'bottom-center',
+      
+        // Styling
+        style: { backgroundColor: '#fc5659'},
+        className: '',
+      
+        // Custom Icon
+        icon: '❌',
+      
+        // Change colors of success/error/loading icon
+        iconTheme: {
+          primary: '#99f598',
+          secondary: '#99f598',
+        },
+      
+        // Aria
+        ariaProps: {
+          role: 'status',
+          'aria-live': 'polite',
+        },
+      
+        // Additional Configuration
+        removeDelay: 2000,
+      });
       // setBlog(null);
     } finally {
       // setLoading(false);
@@ -126,6 +179,7 @@ useEffect(() => {
         <div className="mt-8 pt-4 border-t border-black text-sm italic">
           This article first appeared in The Commit Log on {new Date().toLocaleDateString()}
         </div>
+        <Toaster/>
       </article>
     </main>
   )

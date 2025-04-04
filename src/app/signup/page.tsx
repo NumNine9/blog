@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { signIn, signUp } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function AuthForm() {
   const router = useRouter()
@@ -33,9 +34,61 @@ export default function AuthForm() {
   
       if (data?.error) {
         console.error("Authentication error:", data?.error);
-        alert(`Error: ${data.error}`);
+        // alert(`Error: ${data.error}`);
+        toast.error(`Error: ${data.error}`, {
+          duration: 4000,
+          position: 'bottom-center',
+        
+          // Styling
+          style: { backgroundColor: '#fc5659'},
+          className: '',
+        
+          // Custom Icon
+          icon: '❌',
+        
+          // Change colors of success/error/loading icon
+          iconTheme: {
+            primary: '#99f598',
+            secondary: '#99f598',
+          },
+        
+          // Aria
+          ariaProps: {
+            role: 'status',
+            'aria-live': 'polite',
+          },
+        
+          // Additional Configuration
+          removeDelay: 2000,
+        });
       } else {
-        alert(isSignIn ? "Login successful!" : "Signup successful! Check your email.");
+        // alert(isSignIn ? "Login successful!" : "Signup successful! Check your email.");
+        toast.success(isSignIn ? "Login successful!" : "Signup successful! Check your email.", {
+          duration: 4000,
+          position: 'bottom-center',
+        
+          // Styling
+          style: { backgroundColor: '#99f598'},
+          className: '',
+        
+          // Custom Icon
+          icon: '👏',
+        
+          // Change colors of success/error/loading icon
+          iconTheme: {
+            primary: '#99f598',
+            secondary: '#99f598',
+          },
+        
+          // Aria
+          ariaProps: {
+            role: 'status',
+            'aria-live': 'polite',
+          },
+        
+          // Additional Configuration
+          removeDelay: 2000,
+        });
         if(isSignIn){
           router.push("/admin/create"); // Redirect after success
         }else{
@@ -47,7 +100,33 @@ export default function AuthForm() {
       }
     } catch (error) {
       console.error("Unexpected error:", error);
-      alert("An unexpected error occurred. Please try again.");
+      // alert("An unexpected error occurred. Please try again.");
+      toast.error("An unexpected error occurred. Please try again.", {
+        duration: 4000,
+        position: 'bottom-center',
+      
+        // Styling
+        style: { backgroundColor: '#fc5659'},
+        className: '',
+      
+        // Custom Icon
+        icon: '❌',
+      
+        // Change colors of success/error/loading icon
+        iconTheme: {
+          primary: '#99f598',
+          secondary: '#99f598',
+        },
+      
+        // Aria
+        ariaProps: {
+          role: 'status',
+          'aria-live': 'polite',
+        },
+      
+        // Additional Configuration
+        removeDelay: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -148,6 +227,7 @@ export default function AuthForm() {
           <div className="text-xs text-center text-purple-800 font-bold uppercase tracking-widest">
             © 1983 THE COMMIT LOG MAGAZINE CORP • ALL RIGHTS RESERVED
           </div>
+          <Toaster/>
         </div>
       </form>
     </div>

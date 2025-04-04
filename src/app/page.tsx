@@ -9,8 +9,10 @@ import { DateDisplay } from "@/components/date-display"
 import { useEffect, useState } from "react";
 import { BlogPost, fetchPosts, supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js"
+import { useRouter } from "next/navigation"
 
 export default function Home() {
+  const router = useRouter();
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
@@ -26,7 +28,25 @@ export default function Home() {
 
     checkUser();
     fetchPosts().then(posts=>{setBlogPosts(posts)})
-  }, []);
+  }, [user]);
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error('Error signing out:', error.message);
+        return;
+      }
+
+      // Refresh the router to update auth state
+      router.refresh();
+      
+      // Optional: Redirect to home page after sign out
+      router.push('/');
+    } catch (error) {
+      console.error('Unexpected error:', error);
+    }
+  };
   // In a real app, you would fetch this data from your database yes
   // const blogPosts = [
   //   {
@@ -76,9 +96,10 @@ export default function Home() {
           {/* <Link href="/admin/create">SUBMIT ARTICLE</Link> */}
           {user ? <Link href="/admin/create">SUBMIT ARTICLE</Link> : <Link href="/signup">SUBMIT ARTICLE</Link>}
         </Button>
-        {/* <Button asChild className="bg-black text-white hover:bg-gray-800 rounded-none">
-          {user ? <p>Welcome, {user.email}!</p> : <p>User is not logged in.</p>}
-        </Button> */}
+        {user ? 
+        <Button asChild className="bg-black text-white hover:bg-gray-800 rounded-none" onClick={()=>handleSignOut()}>
+          <p>Sign Out</p>
+        </Button>: ''}
       </div>
 
       {loading? '': <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

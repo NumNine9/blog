@@ -13,6 +13,7 @@ import { TagInput } from "@/components/tag-input"
 import { NewspaperHeader } from "@/components/newspaper-header"
 import { supabase } from "@/lib/supabase"
 import { User } from "@supabase/supabase-js"
+import toast, { Toaster } from "react-hot-toast"
 
 export default function CreateBlogPost() {
   const router = useRouter()
@@ -34,7 +35,33 @@ export default function CreateBlogPost() {
           setUser(data.user);
         }else{
           console.error("User is not logged in.");
-          alert("Please log in to add a blog post.");
+          toast.error("Please log in to add a blog post.", {
+            duration: 4000,
+            position: 'bottom-center',
+          
+            // Styling
+            style: { backgroundColor: '#fc5659'},
+            className: '',
+          
+            // Custom Icon
+            icon: '❌',
+          
+            // Change colors of success/error/loading icon
+            iconTheme: {
+              primary: '#99f598',
+              secondary: '#99f598',
+            },
+          
+            // Aria
+            ariaProps: {
+              role: 'status',
+              'aria-live': 'polite',
+            },
+          
+            // Additional Configuration
+            removeDelay: 2000,
+          });
+          // alert("Please log in to add a blog post.");
           return;
         }
         setLoading(false);
@@ -60,23 +87,36 @@ export default function CreateBlogPost() {
       // //some random text
     };
     console.log('NEWPOST',newPost)
-
-    // Simulate API call
-    // await new Promise((resolve) => setTimeout(resolve, 1000))
-    // const result = await addBlogPost(newPost);
-    // try{
-    //   // const { data, error } = 
-    //   await supabase.from('blogPosts').insert([newPost]).select()
-    //   alert("Post added successfully!");
-    //   router.push("/")
-    // }catch(err){
-    //   alert("Error adding post!");
-    //   console.log(err)
-    // }
     const { data, error } = await supabase.from('blogPosts').insert([newPost]).select()
         
     if (data) {
-      alert("Post added successfully!");
+      // alert("Post added successfully!");
+      toast.success("Post added successfully!", {
+          duration: 4000,
+          position: 'bottom-center',
+        
+          // Styling
+          style: { backgroundColor: '#99f598'},
+          className: '',
+        
+          // Custom Icon
+          icon: '👏',
+        
+          // Change colors of success/error/loading icon
+          iconTheme: {
+            primary: '#99f598',
+            secondary: '#99f598',
+          },
+        
+          // Aria
+          ariaProps: {
+            role: 'status',
+            'aria-live': 'polite',
+          },
+        
+          // Additional Configuration
+          removeDelay: 2000,
+        });
       // Reset form
       setTitle("");
       setAuthor("");
@@ -87,7 +127,34 @@ export default function CreateBlogPost() {
       setContent("");
       setSubtitle("");
     } else {
-      alert("Error adding post!");
+      // alert("Error adding post!");
+      toast.error("Error adding post!", {
+        duration: 4000,
+        position: 'bottom-center',
+      
+        // Styling
+        style: { backgroundColor: '#fc5659'},
+        className: '',
+      
+        // Custom Icon
+        icon: '❌',
+      
+        // Change colors of success/error/loading icon
+        iconTheme: {
+          primary: '#99f598',
+          secondary: '#99f598',
+        },
+      
+        // Aria
+        ariaProps: {
+          role: 'status',
+          'aria-live': 'polite',
+        },
+      
+        // Additional Configuration
+        removeDelay: 2000,
+      });
+
       console.log(error)
     }
 
@@ -103,9 +170,9 @@ export default function CreateBlogPost() {
         <h1 className="text-3xl font-bold mb-8 font-serif uppercase border-b-2 border-black pb-2">
           Submit New Article
         </h1>
-        <h1 className="text-3xl font-bold mb-8 font-serif uppercase border-b-2 border-black pb-2">
+        {/* <h1 className="text-3xl font-bold mb-8 font-serif uppercase border-b-2 border-black pb-2">
           {user?.email}
-        </h1>
+        </h1> */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="title" className="font-serif text-lg">
@@ -219,6 +286,7 @@ export default function CreateBlogPost() {
             >
               {isSubmitting || loading ? "Publishing..." : "Publish Article"}
             </Button>
+            <Toaster/>
           </div>
         </form>
       </div>
