@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { BlogPost, fetchPosts, supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 export default function Home() {
   const router = useRouter();
@@ -37,6 +38,32 @@ export default function Home() {
         console.error('Error signing out:', error.message);
         return;
       }
+      toast.success("You have signed out", {
+        duration: 4000,
+        position: 'bottom-center',
+      
+        // Styling
+        style: { backgroundColor: '#99f598'},
+        className: '',
+      
+        // Custom Icon
+        icon: '👏',
+      
+        // Change colors of success/error/loading icon
+        iconTheme: {
+          primary: '#99f598',
+          secondary: '#99f598',
+        },
+      
+        // Aria
+        ariaProps: {
+          role: 'status',
+          'aria-live': 'polite',
+        },
+      
+        // Additional Configuration
+        removeDelay: 2000,
+      });
 
       // Refresh the router to update auth state
       router.refresh();

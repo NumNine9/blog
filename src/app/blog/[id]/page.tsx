@@ -115,7 +115,14 @@ useEffect(() => {
 
   // setBlog(data)
   // const blog: BlogPost = data
-
+  const dateString: string | undefined = blog?.created_at;
+  const date = dateString? new Date(dateString): new Date()
+  const formattedDate = date.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
   
   return (
     <main className="max-w-[1200px] mx-auto px-4 py-8 bg-[#f9f7f1]">
@@ -155,7 +162,7 @@ useEffect(() => {
           <div>
             By <span className="font-semibold uppercase">{blog?.author}</span>, Staff Reporter
           </div>
-          <time className="italic">{blog?.created_at}</time>
+          <time className="italic">{formattedDate}</time>
         </div>
 
         <div className="relative w-full mb-8">
@@ -177,7 +184,7 @@ useEffect(() => {
         />
 
         <div className="mt-8 pt-4 border-t border-black text-sm italic">
-          This article first appeared in The Commit Log on {new Date().toLocaleDateString()}
+          This article first appeared in The Commit Log on {formattedDate}
         </div>
         <Toaster/>
       </article>

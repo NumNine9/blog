@@ -21,6 +21,14 @@ interface BlogArticleProps {
 }
 
 export function BlogArticle({ post, featured = false }: BlogArticleProps) {
+  const dateString: string | undefined = post?.created_at;
+  const date = dateString? new Date(dateString): new Date()
+  const formattedDate = date.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
   return (
     <article className={cn("font-serif", featured ? "border-b border-gray-300 pb-6" : "")}>
       <div className="flex flex-col gap-3">
@@ -28,7 +36,7 @@ export function BlogArticle({ post, featured = false }: BlogArticleProps) {
           <Badge variant="outline" className="rounded-none uppercase font-bold border-black">
             {post?.category}
           </Badge>
-          <time className="italic">{post?.created_at}</time>
+          <time className="italic">{formattedDate}</time>
         </div>
 
         <Link href={`/blog/${post?.id}`} className="group">
