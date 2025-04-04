@@ -7,7 +7,8 @@ import { ArrowLeft } from "lucide-react"
 import { NewspaperHeader } from "@/components/newspaper-header"
 import { DateDisplay } from "@/components/date-display"
 import { BlogPost, supabase } from "@/lib/supabase"
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
+import { altPic } from "@/components/blog-article";
 
 interface BlogPostPageProps {
   params: {
@@ -15,7 +16,8 @@ interface BlogPostPageProps {
   }
 }
 // { params }: BlogPostPageProps
-export default function BlogPostPage({ params }: BlogPostPageProps) {
+export default function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [blog, setBlog] = useState<BlogPost>();
 // Fetch the specific blog post
 useEffect(() => {
@@ -27,7 +29,7 @@ useEffect(() => {
       const { data, error: supabaseError } = await supabase
         .from('blogPosts')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', id)
         .single();
 
       if (supabaseError) {
@@ -48,10 +50,10 @@ useEffect(() => {
     }
   }
 
-  if (params?.id) {
+  if (id) {
     loadBlog();
   }
-}, [params?.id]);
+}, [id]);
   // const { data } = await supabase
   //   .from('blogPosts')
   //   .select('*')
@@ -105,8 +107,8 @@ useEffect(() => {
 
         <div className="relative w-full mb-8">
           <Image
-            src={blog?.imageUrl || "/placeholder.svg"}
-            alt={blog?.created_at || "/placeholder.svg"}
+            src={blog?.imageUrl || altPic}
+            alt={blog?.created_at || altPic}
             width={800}
             height={400}
             className="w-full grayscale"
