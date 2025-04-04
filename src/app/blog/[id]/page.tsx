@@ -10,11 +10,11 @@ import { BlogPost, supabase } from "@/lib/supabase"
 import { use, useEffect, useState } from 'react';
 import { altPic } from "@/components/blog-article";
 
-interface BlogPostPageProps {
-  params: {
-    id: string
-  }
-}
+// interface BlogPostPageProps {
+//   params: {
+//     id: string
+//   }
+// }
 // { params }: BlogPostPageProps
 export default function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
