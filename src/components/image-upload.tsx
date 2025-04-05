@@ -17,7 +17,7 @@ export default function ImageUpload({ onUpload }: { onUpload: (url: string) => v
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      let { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('blog-images')
         .upload(filePath, file);
 
