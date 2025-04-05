@@ -26,8 +26,8 @@ const specialElite = Special_Elite({
 })
 
 export const metadata: Metadata = {
-  title: "The Commit Log - Vintage Newspaper Style",
-  description: "A blog with classic 1970s-1980s newspaper styling",
+  title: "The Commit Log - Vintage Newspaper",
+  description: "Past Meets Pixel",
 }
 
 export default function RootLayout({
