@@ -108,9 +108,14 @@ export default function Home() {
           {user ? <Link href="/admin/create">SUBMIT ARTICLE</Link> : <Link href="/signup">SUBMIT ARTICLE</Link>}
         </Button>
         {user && 
-          <Button asChild className="bg-black text-white hover:bg-gray-800 rounded-none" onClick={() => handleSignOut()}>
-            <p>Sign Out</p>
-          </Button>
+          <Button
+          asChild
+          onClick={() => handleSignOut()}
+          className="bg-[#3d4a4a] text-white hover:bg-gray-800 rounded-none mr-[3px] border-white"
+        >
+          <p>Sign Out</p>
+        </Button>
+        
         }
       </div>
 
