@@ -14,6 +14,7 @@ import { NewspaperHeader } from "@/components/newspaper-header"
 import { supabase } from "@/lib/supabase"
 import { User } from "@supabase/supabase-js"
 import toast, { Toaster } from "react-hot-toast"
+import ImageUpload from "@/components/image-upload"
 
 export default function CreateBlogPost() {
   const router = useRouter()
@@ -229,6 +230,14 @@ export default function CreateBlogPost() {
               required
             />
           </div>
+          {/* Image upload component */}
+          <ImageUpload onUpload={setImageURL} />
+          
+          {imageURL && (
+            <div>
+              <img src={imageURL} alt="Preview" style={{ maxWidth: '200px' }} />
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="content" className="font-serif text-lg">
