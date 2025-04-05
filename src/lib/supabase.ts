@@ -21,7 +21,20 @@ export type BlogPost = {
   views?: number;
   // slug?: string;
 };
+export const fetchPagePosts = async (page = 1, pageSize = 3) => {
+  const { data, error } = await supabase
+    .from('blogPosts')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .range((page - 1) * pageSize, page * pageSize - 1);
 
+  if (error) {
+    console.error('Error fetching posts:', error);
+    return [];
+  }
+
+  return data as BlogPost[];
+};
 export type BlogFormData = {
   title: string;
   author: string;
