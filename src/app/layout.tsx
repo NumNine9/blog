@@ -27,6 +27,16 @@ const specialElite = Special_Elite({
 
 export const metadata: Metadata = {
   title: "The Commit Log - Vintage Newspaper",
+  openGraph: {
+    images: [
+      {
+        url:"./favicon.ico",
+        width: 1200,
+        height: 630,
+        alt: "The Commit Log Newspaper",
+      }
+    ]
+  },
   description: "Past Meets Pixel",
 }
 
