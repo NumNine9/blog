@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TagInput } from "@/components/tag-input"
 import { NewspaperHeader } from "@/components/newspaper-header"
 import { supabase } from "@/lib/supabase"
-import { User } from "@supabase/supabase-js"
+// import { User } from "@supabase/supabase-js"
 import toast, { Toaster } from "react-hot-toast"
 import ImageUpload from "@/components/image-upload"
 import MarkdownEditor from "@/components/MarkdownEditor"
@@ -28,13 +28,13 @@ export default function CreateBlogPost() {
   const [content, setContent] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [user, setUser] = useState<User>();
+  // const [user, setUser] = useState<User>();
     const [loading, setLoading] = useState(true);
     useEffect(() => {
       const checkUser = async () => {
         const { data } = await supabase.auth.getUser();
         if (data?.user) {
-          setUser(data.user);
+          // setUser(data.user);
         }else{
           console.error("User is not logged in.");
           toast.error("Please log in to add a blog post.", {
