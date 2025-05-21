@@ -11,6 +11,7 @@ import { BlogPost, fetchPagePosts, supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
+import { Loader } from "@/components/loader"
 
 export default function Home() {
   const router = useRouter();
@@ -121,7 +122,8 @@ export default function Home() {
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <p>Loading posts...</p>
+          {/* <p>Loading posts...</p> */}
+          <Loader/>
         </div>
       ) : (
         <>
