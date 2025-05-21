@@ -15,6 +15,7 @@ import { supabase } from "@/lib/supabase"
 import { User } from "@supabase/supabase-js"
 import toast, { Toaster } from "react-hot-toast"
 import ImageUpload from "@/components/image-upload"
+import MarkdownEditor from "@/components/MarkdownEditor"
 
 export default function CreateBlogPost() {
   const router = useRouter()
@@ -70,7 +71,7 @@ export default function CreateBlogPost() {
   
       checkUser();
     }, []);
-  console.log(user)
+  // console.log(user)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -163,7 +164,11 @@ export default function CreateBlogPost() {
     setIsSubmitting(false)
     // router.push("/")
   }
-
+const handleMarkdownContent = (markdown: string) => {
+    // console.log('Saving blog content:', markdown);
+    // You can now send this content to your backend or store it
+    setContent(markdown)
+  };
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-8 bg-[#f9f7f1]">
       <NewspaperHeader />
@@ -243,14 +248,15 @@ export default function CreateBlogPost() {
             <Label htmlFor="content" className="font-serif text-lg">
               Article Content
             </Label>
-            <Textarea
+            {/* <Textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Write your article content here. HTML formatting is supported."
               className="min-h-[300px] font-serif rounded-none border-black"
               required
-            />
+            /> */}
+            <MarkdownEditor onContentChange={handleMarkdownContent}/>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -10,6 +10,8 @@ import { BlogPost, supabase } from "@/lib/supabase"
 import { use, useEffect, useState } from 'react';
 import { altPic } from "@/components/blog-article";
 import toast, { Toaster } from "react-hot-toast";
+import MDEditor from "@uiw/react-md-editor";
+import { Loader } from "@/components/loader";
 
 // interface BlogPostPageProps {
 //   params: {
@@ -140,6 +142,7 @@ useEffect(() => {
         </Link>
       </Button>
 
+      {blog? 
       <article className="max-w-4xl mx-auto font-serif">
         <div className="flex flex-wrap gap-2 mb-4">
           <Badge variant="outline" className="rounded-none uppercase font-bold border-black">
@@ -178,16 +181,26 @@ useEffect(() => {
           </div>
         </div>
 
-        <div
+        {/* <div
           className="prose prose-lg max-w-none font-serif prose-headings:font-serif prose-headings:uppercase prose-headings:font-bold"
-          dangerouslySetInnerHTML={{ __html: blog?.content || "no content" }}
-        />
+          dangerouslySetInnerHTML={{ __html: blog?.content || "no content" }} bg-[#f9f7f1]
+        /> */}
+
+        <div className="container bg-white dark:bg-gray-900 p-6 rounded-lg">
+          <MDEditor.Markdown source={blog?.content || "no content"} />
+        </div>
 
         <div className="mt-8 pt-4 border-t border-black text-sm italic">
           This article first appeared in The Commit Log on {formattedDate}
         </div>
         <Toaster/>
       </article>
+      : 
+      <div className="flex justify-center items-center h-64">
+          {/* <p>Loading posts...</p> */}
+        <Loader/>
+      </div>  
+      }
     </main>
   )
 }
