@@ -186,7 +186,7 @@ useEffect(() => {
           dangerouslySetInnerHTML={{ __html: blog?.content || "no content" }} bg-[#f9f7f1]
         /> */}
 
-        <div className="container bg-white dark:bg-gray-900 p-6 rounded-lg">
+        <div className="container bg-white p-6 rounded-lg">
           <MDEditor.Markdown source={blog?.content || "no content"} />
         </div>
 
