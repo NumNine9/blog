@@ -23,13 +23,13 @@ export type BlogPost = {
 };
 export const fetchPagePosts = async (page = 1, pageSize = 3) => {
   const { data, error } = await supabase
-    .from('blogPosts')
-    .select('*')
-    .order('created_at', { ascending: false })
+    .from("blogPosts")
+    .select("*")
+    .order("created_at", { ascending: false })
     .range((page - 1) * pageSize, page * pageSize - 1);
 
   if (error) {
-    console.error('Error fetching posts:', error);
+    console.error("Error fetching posts:", error);
     return [];
   }
 
@@ -41,6 +41,27 @@ export type BlogFormData = {
   imageFile: File | null;
   content: string;
 };
+
+export interface Article {
+  source: {
+    id: string | null;
+    name: string;
+  };
+  author: string | null;
+  title: string;
+  description: string;
+  url: string;
+  urlToImage: string | null;
+  publishedAt: string;
+  content: string | null;
+}
+
+export interface NewsResponse {
+  status: string;
+  totalResults: number;
+  articles: Article[];
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export const signUp = async (email: string, password: string) => {
   const { data, error } = await supabase.auth.signUp({
@@ -71,8 +92,11 @@ export const signIn = async (email: string, password: string) => {
 };
 
 export const addBlogPost = async (post: BlogPost) => {
-  const { data, error } = await supabase.from("blogPosts").insert([post]).select();
-  
+  const { data, error } = await supabase
+    .from("blogPosts")
+    .insert([post])
+    .select();
+
   if (error) {
     console.error("Error inserting blog post:", error);
     return null;
@@ -81,11 +105,13 @@ export const addBlogPost = async (post: BlogPost) => {
   return data;
 };
 export const fetchPosts = async () => {
-    const { data, error } = await supabase.from("blogPosts").select("*").order("created_at", { ascending: false });
-    if (error) {
-      console.error("Error fetching posts:", error);
-      return [];
-    }
-    return data;
-  };
-  
+  const { data, error } = await supabase
+    .from("blogPosts")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error("Error fetching posts:", error);
+    return [];
+  }
+  return data;
+};
