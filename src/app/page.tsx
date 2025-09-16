@@ -137,7 +137,7 @@ export default function Home() {
             onClick={() => handleSignOut()}
             className="bg-[#3d4a4a] text-white hover:bg-gray-800 rounded-none mr-[3px] border-white"
           >
-            <p>Sign Out</p>
+            <p>Sign Outt</p>
           </Button>
         )}
       </div>
@@ -166,7 +166,6 @@ export default function Home() {
       </div>
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          {/* <p>Loading posts...</p> */}
           <Loader />
         </div>
       ) : (
