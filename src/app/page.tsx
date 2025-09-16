@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
 import { Loader } from "@/components/loader";
 import { Article } from "@/lib/supabase";
 import NewsCard from "@/components/NewsCard";
+import SearchBar from "@/components/SearchBar";
+import ContentFeed from "@/components/ContentFeed";
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState<User>();
@@ -25,7 +27,27 @@ export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
   // const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("general");
+  const fetchPostsData = async () => {
+    setLoading(true);
+    try {
+      // First fetch the total count of posts
+      const { count } = await supabase
+        .from("blogPosts")
+        .select("*", { count: "exact", head: true });
 
+      // Calculate total pages
+      const calculatedTotalPages = Math.ceil((count || 0) / pageSize);
+      setTotalPages(calculatedTotalPages);
+
+      // Then fetch the paginated posts
+      const posts = await fetchPagePosts(currentPage, pageSize);
+      setBlogPosts(posts);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     const checkUser = async () => {
       const { data } = await supabase.auth.getUser();
@@ -50,28 +72,6 @@ export default function Home() {
     checkUser();
     fetchPostsData();
   }, [currentPage, category]); // Add currentPage as dependency
-
-  const fetchPostsData = async () => {
-    setLoading(true);
-    try {
-      // First fetch the total count of posts
-      const { count } = await supabase
-        .from("blogPosts")
-        .select("*", { count: "exact", head: true });
-
-      // Calculate total pages
-      const calculatedTotalPages = Math.ceil((count || 0) / pageSize);
-      setTotalPages(calculatedTotalPages);
-
-      // Then fetch the paginated posts
-      const posts = await fetchPagePosts(currentPage, pageSize);
-      setBlogPosts(posts);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSignOut = async () => {
     try {
@@ -137,10 +137,11 @@ export default function Home() {
             onClick={() => handleSignOut()}
             className="bg-[#3d4a4a] text-white hover:bg-gray-800 rounded-none mr-[3px] border-white"
           >
-            <p>Sign Outt</p>
+            <p>Sign Out</p>
           </Button>
         )}
       </div>
+      <ContentFeed internalContent={blogPosts} externalContent={articles} />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center mb-6">
           <select
@@ -156,12 +157,6 @@ export default function Home() {
             <option value="sports">Sports</option>
             <option value="technology">Technology</option>
           </select>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.map((article, index) => (
-            <NewsCard key={index} article={article} />
-          ))}
         </div>
       </div>
       {loading ? (
@@ -184,6 +179,11 @@ export default function Home() {
                 <BlogArticle key={post.id} post={post} featured={false} />
               ))}
             </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.map((article, index) => (
+              <NewsCard key={index} article={article} />
+            ))}
           </div>
 
           {totalPages > 1 && (

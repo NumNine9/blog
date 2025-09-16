@@ -2,26 +2,62 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+export type ContentItem =
+  | {
+      type: "internal";
+      id: number;
+      created_at?: string;
+      updated_at?: string;
+      title: string;
+      subtitle: string;
+      content: string;
+      excerpt: string;
+      author: string;
+      category: string;
+      tags: Array<string>;
+      imageURL: string;
+      published?: boolean;
+      views?: number;
+    }
+  | {
+      type: "external";
+      source: {
+        id: string | null;
+        name: string;
+      };
+      author: string | null;
+      title: string;
+      description: string;
+      url: string;
+      urlToImage: string | null;
+      publishedAt: string;
+      content: string | null;
+      id: string; // Using URL as ID for external content
+    };
 // const SUPABASE_SERVICE_ROLE_KEY=process.env.SUPABASE_SERVICE_ROLE_KEY; // Not exposed to browser!
 export type BlogPost = {
   id: number;
-  created_at?: string; // Supabase automatic timestamp
-  updated_at?: string; // Supabase automatic timestamp
+  created_at?: string;
+  updated_at?: string;
   title: string;
   subtitle: string;
   content: string;
   excerpt: string;
-  // date: string; // Consider using ISO string format: `${number}-${number}-${number}`
   author: string;
-  category: string; // Specific categories if limited
-  tags: Array<string>; // Common tags if known
+  category: string;
+  tags: Array<string>;
   imageURL: string;
-  // Metadata fields
   published?: boolean;
   views?: number;
-  // slug?: string;
+  source_type: "internal" | "external";
+  external_source?: string; // For external content source name
+  original_url?: string; // For external content original link
 };
-export const fetchPagePosts = async (page = 1, pageSize = 3) => {
+export const fetchPagePosts = async (
+  page = 1,
+  pageSize = 3,
+  category = "general"
+) => {
   const { data, error } = await supabase
     .from("blogPosts")
     .select("*")
@@ -32,8 +68,21 @@ export const fetchPagePosts = async (page = 1, pageSize = 3) => {
     console.error("Error fetching posts:", error);
     return [];
   }
-
-  return data as BlogPost[];
+  // Add source_type to distinguish content
+  const internalWithType =
+    data?.map((post) => ({
+      ...post,
+      source_type: "internal",
+    })) || [];
+  // Fetch external content from NewsAPI
+  const externalResponse = await fetch(`/api/news?category=${category}`);
+  const externalData = await externalResponse.json();
+  const externalWithType = externalData.articles.map((article: Article) => ({
+    ...article,
+    source_type: "external",
+  }));
+  const combinedData = [...internalWithType, ...externalWithType];
+  return combinedData as BlogPost[];
 };
 export type BlogFormData = {
   title: string;
