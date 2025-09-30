@@ -8,7 +8,7 @@ interface ApiError {
   message: string;
   response?: {
     status: number;
-    data: any;
+    data: NewsResponse;
   };
 }
 // Debug: Check if API key is loaded (remove in production)
