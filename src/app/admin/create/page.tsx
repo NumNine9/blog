@@ -1,24 +1,31 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { TagInput } from "@/components/tag-input"
-import { NewspaperHeader } from "@/components/newspaper-header"
-import { supabase } from "@/lib/supabase"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { TagInput } from "@/components/tag-input";
+import { NewspaperHeader } from "@/components/newspaper-header";
+import { supabase } from "@/lib/supabase";
 // import { User } from "@supabase/supabase-js"
-import toast, { Toaster } from "react-hot-toast"
-import ImageUpload from "@/components/image-upload"
-import MarkdownEditor from "@/components/MarkdownEditor"
+import toast, { Toaster } from "react-hot-toast";
+import ImageUpload from "@/components/image-upload";
+import MarkdownEditor from "@/components/MarkdownEditor";
+import Image from "next/image";
 
 export default function CreateBlogPost() {
-  const router = useRouter()
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState("");
@@ -27,54 +34,54 @@ export default function CreateBlogPost() {
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [subtitle, setSubtitle] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // const [user, setUser] = useState<User>();
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-      const checkUser = async () => {
-        const { data } = await supabase.auth.getUser();
-        if (data?.user) {
-          // setUser(data.user);
-        }else{
-          console.error("User is not logged in.");
-          toast.error("Please log in to add a blog post.", {
-            duration: 4000,
-            position: 'bottom-center',
-          
-            // Styling
-            style: { backgroundColor: '#fc5659'},
-            className: '',
-          
-            // Custom Icon
-            icon: '❌',
-          
-            // Change colors of success/error/loading icon
-            iconTheme: {
-              primary: '#99f598',
-              secondary: '#99f598',
-            },
-          
-            // Aria
-            ariaProps: {
-              role: 'status',
-              'aria-live': 'polite',
-            },
-          
-            // Additional Configuration
-            removeDelay: 2000,
-          });
-          // alert("Please log in to add a blog post.");
-          return;
-        }
-        setLoading(false);
-      };
-  
-      checkUser();
-    }, []);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        // setUser(data.user);
+      } else {
+        console.error("User is not logged in.");
+        toast.error("Please log in to add a blog post.", {
+          duration: 4000,
+          position: "bottom-center",
+
+          // Styling
+          style: { backgroundColor: "#fc5659" },
+          className: "",
+
+          // Custom Icon
+          icon: "❌",
+
+          // Change colors of success/error/loading icon
+          iconTheme: {
+            primary: "#99f598",
+            secondary: "#99f598",
+          },
+
+          // Aria
+          ariaProps: {
+            role: "status",
+            "aria-live": "polite",
+          },
+
+          // Additional Configuration
+          removeDelay: 2000,
+        });
+        // alert("Please log in to add a blog post.");
+        return;
+      }
+      setLoading(false);
+    };
+
+    checkUser();
+  }, []);
   // console.log(user)
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
     // setImage
     // In a real app, you would send this data to your API
     const newPost = {
@@ -89,37 +96,40 @@ export default function CreateBlogPost() {
       // created_at: new Date().toISOString(), // Optional, Supabase can auto-generate thi
       // //some random text
     };
-    console.log('NEWPOST',newPost)
-    const { data, error } = await supabase.from('blogPosts').insert([newPost]).select()
-        
+    console.log("NEWPOST", newPost);
+    const { data, error } = await supabase
+      .from("blogPosts")
+      .insert([newPost])
+      .select();
+
     if (data) {
       // alert("Post added successfully!");
       toast.success("Post added successfully!", {
-          duration: 4000,
-          position: 'bottom-center',
-        
-          // Styling
-          style: { backgroundColor: '#99f598'},
-          className: '',
-        
-          // Custom Icon
-          icon: '👏',
-        
-          // Change colors of success/error/loading icon
-          iconTheme: {
-            primary: '#99f598',
-            secondary: '#99f598',
-          },
-        
-          // Aria
-          ariaProps: {
-            role: 'status',
-            'aria-live': 'polite',
-          },
-        
-          // Additional Configuration
-          removeDelay: 2000,
-        });
+        duration: 4000,
+        position: "bottom-center",
+
+        // Styling
+        style: { backgroundColor: "#99f598" },
+        className: "",
+
+        // Custom Icon
+        icon: "👏",
+
+        // Change colors of success/error/loading icon
+        iconTheme: {
+          primary: "#99f598",
+          secondary: "#99f598",
+        },
+
+        // Aria
+        ariaProps: {
+          role: "status",
+          "aria-live": "polite",
+        },
+
+        // Additional Configuration
+        removeDelay: 2000,
+      });
       // Reset form
       setTitle("");
       setAuthor("");
@@ -133,41 +143,41 @@ export default function CreateBlogPost() {
       // alert("Error adding post!");
       toast.error("Error adding post!", {
         duration: 4000,
-        position: 'bottom-center',
-      
+        position: "bottom-center",
+
         // Styling
-        style: { backgroundColor: '#fc5659'},
-        className: '',
-      
+        style: { backgroundColor: "#fc5659" },
+        className: "",
+
         // Custom Icon
-        icon: '❌',
-      
+        icon: "❌",
+
         // Change colors of success/error/loading icon
         iconTheme: {
-          primary: '#99f598',
-          secondary: '#99f598',
+          primary: "#99f598",
+          secondary: "#99f598",
         },
-      
+
         // Aria
         ariaProps: {
-          role: 'status',
-          'aria-live': 'polite',
+          role: "status",
+          "aria-live": "polite",
         },
-      
+
         // Additional Configuration
         removeDelay: 2000,
       });
 
-      console.log(error)
+      console.log(error);
     }
 
-    setIsSubmitting(false)
+    setIsSubmitting(false);
     // router.push("/")
-  }
-const handleMarkdownContent = (markdown: string) => {
+  };
+  const handleMarkdownContent = (markdown: string) => {
     // console.log('Saving blog content:', markdown);
     // You can now send this content to your backend or store it
-    setContent(markdown)
+    setContent(markdown);
   };
   return (
     <div className="max-w-[1200px] mx-auto px-4 py-8 bg-[#f9f7f1]">
@@ -237,10 +247,14 @@ const handleMarkdownContent = (markdown: string) => {
           </div>
           {/* Image upload component */}
           <ImageUpload onUpload={setImageURL} />
-          
+
           {imageURL && (
             <div>
-              <img src={imageURL} alt="Preview" style={{ maxWidth: '200px' }} />
+              <Image
+                src={imageURL}
+                alt="Preview"
+                style={{ maxWidth: "200px" }}
+              />
             </div>
           )}
 
@@ -256,7 +270,7 @@ const handleMarkdownContent = (markdown: string) => {
               className="min-h-[300px] font-serif rounded-none border-black"
               required
             /> */}
-            <MarkdownEditor onContentChange={handleMarkdownContent}/>
+            <MarkdownEditor onContentChange={handleMarkdownContent} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -282,7 +296,11 @@ const handleMarkdownContent = (markdown: string) => {
 
             <div className="space-y-2">
               <Label className="font-serif text-lg">Tags</Label>
-              <TagInput tags={tags} setTags={setTags} className="rounded-none border-black" />
+              <TagInput
+                tags={tags}
+                setTags={setTags}
+                className="rounded-none border-black"
+              />
             </div>
           </div>
 
@@ -302,11 +320,10 @@ const handleMarkdownContent = (markdown: string) => {
             >
               {isSubmitting || loading ? "Publishing..." : "Publish Article"}
             </Button>
-            <Toaster/>
+            <Toaster />
           </div>
         </form>
       </div>
     </div>
-  )
+  );
 }
-

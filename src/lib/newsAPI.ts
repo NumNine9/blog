@@ -4,6 +4,13 @@ import { Article, NewsResponse } from "./supabase";
 const API_KEY = process.env.NEWS_API_KEY;
 const BASE_URL = "https://newsapi.org/v2";
 
+interface ApiError {
+  message: string;
+  response?: {
+    status: number;
+    data: any;
+  };
+}
 // Debug: Check if API key is loaded (remove in production)
 console.log("API Key available:", !!API_KEY);
 if (!API_KEY) {
@@ -35,11 +42,12 @@ export const fetchTopHeadlines = async (
     }
 
     return response.data.articles;
-  } catch (error: any) {
-    console.error("Error fetching news:", error.message);
-    if (error.response) {
-      console.error("Status:", error.response.status);
-      console.error("Data:", error.response.data);
+  } catch (error: unknown) {
+    const apiError = error as ApiError;
+    console.error("Error fetching news:", apiError.message);
+    if (apiError.response) {
+      console.error("Status:", apiError.response.status);
+      console.error("Data:", apiError.response.data);
     }
     return [];
   }

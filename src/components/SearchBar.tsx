@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { BlogPost } from "@/lib/supabase";
-import { Article } from "@/lib/supabase";
+import { useState } from "react";
+// import { BlogPost } from "@/lib/supabase";
+// import { Article } from "@/lib/supabase";
 
 interface SearchBarProps {
   onSearch: (query: string, filter: string) => void;

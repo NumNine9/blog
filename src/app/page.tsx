@@ -12,7 +12,7 @@ import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Loader } from "@/components/loader";
-import { Article } from "@/lib/supabase";
+// import { Article } from "@/lib/supabase";
 // import NewsCard from "@/components/NewsCard";
 // import SearchBar from "@/components/SearchBar";
 // import ContentFeed from "@/components/ContentFeed";
@@ -26,7 +26,7 @@ export default function Home() {
   const pageSize = 3; // Number of posts per page
   // const [articles, setArticles] = useState<Article[]>([]);
   // const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState("general");
+  // const [category, setCategory] = useState("general");
   const fetchPostsData = async () => {
     setLoading(true);
     try {
@@ -71,7 +71,10 @@ export default function Home() {
     // fetchNews();
     checkUser();
     fetchPostsData();
-  }, [currentPage, category]); // Add currentPage as dependency
+  }, [
+    currentPage,
+    // , category
+  ]); // Add currentPage as dependency
 
   const handleSignOut = async () => {
     try {

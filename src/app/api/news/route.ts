@@ -17,13 +17,16 @@ export async function GET(request: NextRequest) {
           ? "No articles found"
           : "Articles retrieved successfully",
     });
-  } catch (error: any) {
-    console.error("API Route Error:", error.message);
+  } catch (error: unknown) {
+    console.error(
+      "API Route Error:",
+      error instanceof Error ? error.message : "Unknown error"
+    );
 
     return NextResponse.json(
       {
         error: "Failed to fetch news",
-        details: error.message,
+        // details: error.message,
         articles: [], // Return empty array instead of error
       },
       { status: 500 }
