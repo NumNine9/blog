@@ -13,9 +13,9 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Loader } from "@/components/loader";
 import { Article } from "@/lib/supabase";
-import NewsCard from "@/components/NewsCard";
-import SearchBar from "@/components/SearchBar";
-import ContentFeed from "@/components/ContentFeed";
+// import NewsCard from "@/components/NewsCard";
+// import SearchBar from "@/components/SearchBar";
+// import ContentFeed from "@/components/ContentFeed";
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState<User>();
@@ -24,7 +24,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 3; // Number of posts per page
-  const [articles, setArticles] = useState<Article[]>([]);
+  // const [articles, setArticles] = useState<Article[]>([]);
   // const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("general");
   const fetchPostsData = async () => {
@@ -56,19 +56,19 @@ export default function Home() {
       }
       setLoading(false);
     };
-    const fetchNews = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`/api/news?category=${category}`);
-        const data = await response.json();
-        setArticles(data.articles);
-      } catch (error) {
-        console.error("Error fetching news:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchNews();
+    // const fetchNews = async () => {
+    //   setLoading(true);
+    //   try {
+    //     const response = await fetch(`/api/news?category=${category}`);
+    //     const data = await response.json();
+    //     setArticles(data.articles);
+    //   } catch (error) {
+    //     console.error("Error fetching news:", error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+    // fetchNews();
     checkUser();
     fetchPostsData();
   }, [currentPage, category]); // Add currentPage as dependency
@@ -141,8 +141,8 @@ export default function Home() {
           </Button>
         )}
       </div>
-      <ContentFeed internalContent={blogPosts} externalContent={articles} />
-      <div className="container mx-auto px-4 py-8">
+      {/* <ContentFeed internalContent={blogPosts} externalContent={articles} /> */}
+      {/* <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center mb-6">
           <select
             value={category}
@@ -158,7 +158,7 @@ export default function Home() {
             <option value="technology">Technology</option>
           </select>
         </div>
-      </div>
+      </div> */}
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <Loader />
@@ -180,11 +180,11 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {articles.map((article, index) => (
               <NewsCard key={index} article={article} />
             ))}
-          </div>
+          </div> */}
 
           {totalPages > 1 && (
             <div className="mt-8 flex justify-center">
