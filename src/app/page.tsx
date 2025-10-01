@@ -73,7 +73,7 @@ export default function Home() {
     fetchPostsData();
   }, [
     currentPage,
-    user,
+    // user,
     // , category
   ]); // Add currentPage as dependency
 
