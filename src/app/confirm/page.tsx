@@ -1,35 +1,143 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Mail, RefreshCw } from "lucide-react"
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Mail, RefreshCw } from "lucide-react";
+import { signUp } from "@/lib/supabase";
+import toast from "react-hot-toast";
 // import Link from "next/link"
 
 export default function EmailConfirmation() {
-  const [isResending, setIsResending] = useState(false)
-  const [resendSuccess, setResendSuccess] = useState(false)
-  const email = "YOUR@EMAIL.COM" 
+  const [isResending, setIsResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  // const email = "YOUR@EMAIL.COM"
   const handleResend = async () => {
-    setIsResending(true)
+    // e.preventDefault();
+    setIsResending(true);
 
-    // Add your resend confirmation email logic here
+    try {
+      let data;
+      data = await signUp(email, password); // Await sign-up
+      if (data?.error) {
+        console.error("Authentication error:", data?.error);
+        // alert(`Error: ${data.error}`);
+        toast.error(`Error: ${data.error}`, {
+          duration: 4000,
+          position: "bottom-center",
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsResending(false)
-      setResendSuccess(true)
+          // Styling
+          style: { backgroundColor: "#fc5659" },
+          className: "",
 
-      // Reset success message after 3 seconds
-      setTimeout(() => setResendSuccess(false), 3000)
-    }, 1500)
-  }
+          // Custom Icon
+          icon: "❌",
+
+          // Change colors of success/error/loading icon
+          iconTheme: {
+            primary: "#99f598",
+            secondary: "#99f598",
+          },
+
+          // Aria
+          ariaProps: {
+            role: "status",
+            "aria-live": "polite",
+          },
+
+          // Additional Configuration
+          removeDelay: 2000,
+        });
+      } else {
+        // alert(isSignIn ? "Login successful!" : "Signup successful! Check your email.");
+        toast.success("Email was resent! Check your email.", {
+          duration: 4000,
+          position: "bottom-center",
+
+          // Styling
+          style: { backgroundColor: "#99f598" },
+          className: "",
+
+          // Custom Icon
+          icon: "👏",
+
+          // Change colors of success/error/loading icon
+          iconTheme: {
+            primary: "#99f598",
+            secondary: "#99f598",
+          },
+
+          // Aria
+          ariaProps: {
+            role: "status",
+            "aria-live": "polite",
+          },
+
+          // Additional Configuration
+          removeDelay: 2000,
+        });
+      }
+
+      // Add your resend confirmation email logic here
+
+      // Simulate API call
+      setTimeout(() => {
+        setIsResending(false);
+        setResendSuccess(true);
+
+        // Reset success message after 3 seconds
+        setTimeout(() => setResendSuccess(false), 3000);
+      }, 1500);
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.", {
+        duration: 4000,
+        position: "bottom-center",
+
+        // Styling
+        style: { backgroundColor: "#fc5659" },
+        className: "",
+
+        // Custom Icon
+        icon: "❌",
+
+        // Change colors of success/error/loading icon
+        iconTheme: {
+          primary: "#99f598",
+          secondary: "#99f598",
+        },
+
+        // Aria
+        ariaProps: {
+          role: "status",
+          "aria-live": "polite",
+        },
+
+        // Additional Configuration
+        removeDelay: 2000,
+      });
+    }
+  };
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("signupEmail");
+    const storedPassword = localStorage.getItem("signupPassword");
+    if (storedEmail && storedPassword) {
+      setEmail(storedEmail);
+      setPassword(storedPassword);
+      // Optional: Clear it after use
+      localStorage.removeItem("signupEmail");
+      localStorage.removeItem("signupPassword");
+    }
+  }, []);
 
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="bg-yellow-400 p-4 text-center mb-2 transform -rotate-2">
-        <h1 className="text-5xl font-bold tracking-tight text-purple-800 uppercase">VERIFY!</h1>
+        <h1 className="text-5xl font-bold tracking-tight text-purple-800 uppercase">
+          VERIFY!
+        </h1>
         <div className="text-xs uppercase tracking-widest text-purple-800 font-bold mt-1">
-          ESTABLISHED 1978 • SPECIAL EDITION
+          ESTABLISHED 2025 • SPECIAL EDITION
         </div>
       </div>
 
@@ -38,7 +146,9 @@ export default function EmailConfirmation() {
           <h2 className="text-2xl font-bold text-center uppercase tracking-widest text-purple-800">
             CHECK YOUR MAILBOX!
           </h2>
-          <p className="text-center text-purple-800 font-bold">WE HAVE SENT YOU A SPECIAL INVITATION</p>
+          <p className="text-center text-purple-800 font-bold">
+            WE HAVE SENT YOU A SPECIAL INVITATION
+          </p>
         </div>
 
         <div className="flex justify-center my-8">
@@ -48,8 +158,12 @@ export default function EmailConfirmation() {
         </div>
 
         <div className="bg-yellow-100 border-4 border-purple-800 p-4 text-center mb-6">
-          <p className="text-purple-800 font-bold uppercase">WE HAVE SENT A CONFIRMATION TO:</p>
-          <p className="text-xl font-bold text-purple-800 mt-2 break-all">{email}</p>
+          <p className="text-purple-800 font-bold uppercase">
+            WE HAVE SENT A CONFIRMATION TO:
+          </p>
+          <p className="text-xl font-bold text-purple-800 mt-2 break-all">
+            {email}
+          </p>
         </div>
 
         <div className="space-y-4 text-center">
@@ -61,10 +175,12 @@ export default function EmailConfirmation() {
 
           <div className="border-t-4 border-b-4 border-dashed border-purple-800 py-4 my-6">
             <p className="text-purple-800 font-bold">
-              {resendSuccess ? "NEW INVITATION SENT! CHECK YOUR MAILBOX!" : "DIDN'T RECEIVE OUR INVITATION?"}
+              {resendSuccess
+                ? "NEW INVITATION SENT! CHECK YOUR MAILBOX!"
+                : "DIDN'T RECEIVE OUR INVITATION?"}
             </p>
             <Button
-              onClick={handleResend}
+              onClick={() => handleResend()}
               disabled={isResending}
               className="mt-2 bg-purple-800 hover:bg-purple-900 text-yellow-400 font-bold uppercase tracking-widest py-4 px-6 border-4 border-black transform hover:rotate-1 transition-transform"
             >
@@ -87,11 +203,10 @@ export default function EmailConfirmation() {
 
         <div className="mt-6 border-t-4 border-dashed border-purple-800 pt-4">
           <div className="text-xs text-center text-purple-800 font-bold uppercase tracking-widest">
-            © 1983 RETRO MAGAZINE CORP • ALL RIGHTS RESERVED
+            © 2025 RETRO MAGAZINE CORP • ALL RIGHTS RESERVED
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

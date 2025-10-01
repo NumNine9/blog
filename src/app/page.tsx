@@ -73,6 +73,7 @@ export default function Home() {
     fetchPostsData();
   }, [
     currentPage,
+    user,
     // , category
   ]); // Add currentPage as dependency
 
@@ -138,7 +139,7 @@ export default function Home() {
           <Button
             asChild
             onClick={() => handleSignOut()}
-            className="bg-[#3d4a4a] text-white hover:bg-gray-800 rounded-none mr-[3px] border-white"
+            className="bg-[#3d4a4a] text-white hover:bg-gray-800 rounded-none mr-[3px] border-white cursor-pointer hover:cursor-pointer"
           >
             <p>Sign Out</p>
           </Button>
