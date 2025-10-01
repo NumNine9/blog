@@ -90,6 +90,7 @@ export default function EmailConfirmation() {
         setTimeout(() => setResendSuccess(false), 3000);
       }, 1500);
     } catch (error) {
+      console.log(error);
       toast.error("An unexpected error occurred. Please try again.", {
         duration: 4000,
         position: "bottom-center",
