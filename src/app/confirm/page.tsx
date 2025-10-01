@@ -18,8 +18,8 @@ export default function EmailConfirmation() {
     setIsResending(true);
 
     try {
-      let data;
-      data = await signUp(email, password); // Await sign-up
+      // const data;
+      const data = await signUp(email, password); // Await sign-up
       if (data?.error) {
         console.error("Authentication error:", data?.error);
         // alert(`Error: ${data.error}`);
