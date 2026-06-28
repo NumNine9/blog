@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+// Define types for OpenWeatherMap API responses
 interface WeatherData {
   currentTemp: number;
   tomorrowTemp: number;
@@ -20,6 +21,41 @@ interface WeatherData {
   humidity: number;
   windSpeed: number;
   icon: string;
+}
+
+interface OpenWeatherMapResponse {
+  main: {
+    temp: number;
+    feels_like: number;
+    humidity: number;
+  };
+  weather: Array<{
+    description: string;
+    icon: string;
+  }>;
+  name: string;
+  wind: {
+    speed: number;
+  };
+  cod?: number;
+  message?: string;
+}
+
+interface ForecastList {
+  dt: number;
+  main: {
+    temp: number;
+  };
+  weather: Array<{
+    description: string;
+    icon: string;
+  }>;
+}
+
+interface ForecastResponse {
+  list: ForecastList[];
+  cod?: number;
+  message?: string;
 }
 
 // Function to get city from coordinates using OpenStreetMap Nominatim
@@ -42,6 +78,24 @@ const getCityFromCoords = async (lat: number, lon: number) => {
   }
 };
 
+// Get a clean city name for API calls
+const getCleanCityName = (cityName: string): string => {
+  // Remove "City of", "Metropolitan Municipality", etc.
+  let cleanName = cityName
+    .replace(/City of /i, "")
+    .replace(/Metropolitan Municipality/i, "")
+    .replace(/Local Municipality/i, "")
+    .replace(/District Municipality/i, "")
+    .trim();
+
+  // If city name is too long or complex, use a simplified version
+  if (cleanName.includes("Ekurhuleni")) {
+    return "Johannesburg"; // Use nearest major city
+  }
+
+  return cleanName || "London";
+};
+
 export function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,6 +111,7 @@ export function WeatherWidget() {
 
       try {
         let city = "London"; // Default fallback city
+        let originalCityName = "";
 
         // Try to get user's location
         if (navigator.geolocation) {
@@ -74,13 +129,13 @@ export function WeatherWidget() {
             const cityName = await getCityFromCoords(latitude, longitude);
 
             if (cityName && cityName !== "Unknown") {
-              city = cityName;
+              originalCityName = cityName;
+              city = getCleanCityName(cityName);
               setLocationPermission(true);
             }
           } catch (err) {
             console.log("Geolocation error:", err);
             setLocationPermission(false);
-            // User denied or geolocation failed - use default city
           }
         } else {
           setLocationPermission(false);
@@ -90,10 +145,7 @@ export function WeatherWidget() {
         const apiKey = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
 
         if (!apiKey) {
-          console.error(
-            "OpenWeatherMap API key is missing. Add NEXT_PUBLIC_WEATHER_API_KEY to your .env.local",
-          );
-          // Fallback to mock data in Celsius
+          console.error("OpenWeatherMap API key is missing");
           setWeather({
             currentTemp: 22,
             tomorrowTemp: 20,
@@ -108,58 +160,93 @@ export function WeatherWidget() {
           return;
         }
 
-        // Fetch current weather (using metric units for Celsius)
-        const currentResponse = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`,
-        );
+        // Try to fetch weather with fallback cities if needed
+        let currentData: OpenWeatherMapResponse | null = null;
+        let forecastData: ForecastResponse | null = null;
+        let citiesToTry = [city, "Johannesburg", "Cape Town", "London"];
 
-        if (!currentResponse.ok) {
-          throw new Error(`Weather API error: ${currentResponse.status}`);
-        }
-
-        const currentData = await currentResponse.json();
-
-        // Fetch 5-day forecast for tomorrow's temperature
-        const forecastResponse = await fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`,
-        );
-
-        if (!forecastResponse.ok) {
-          throw new Error(`Forecast API error: ${forecastResponse.status}`);
-        }
-
-        const forecastData = await forecastResponse.json();
-
-        // Get tomorrow's forecast (first entry for tomorrow)
-        const tomorrow =
-          forecastData.list?.find((item: any) => {
-            const date = new Date(item.dt * 1000);
-            const tomorrowDate = new Date();
-            tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-            return (
-              date.getDate() === tomorrowDate.getDate() && date.getHours() >= 12
+        for (const tryCity of citiesToTry) {
+          try {
+            const currentResponse = await fetch(
+              `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(tryCity)}&units=metric&appid=${apiKey}`,
             );
-          }) ||
-          forecastData.list?.[8] ||
-          null;
 
-        // Extract weather data (already in Celsius from units=metric)
+            if (currentResponse.ok) {
+              currentData = await currentResponse.json();
+
+              // Also fetch forecast
+              const forecastResponse = await fetch(
+                `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(tryCity)}&units=metric&appid=${apiKey}`,
+              );
+
+              if (forecastResponse.ok) {
+                forecastData = await forecastResponse.json();
+              }
+              break;
+            }
+          } catch (err) {
+            console.log(`Failed to fetch for ${tryCity}:`, err);
+          }
+        }
+
+        if (!currentData) {
+          // If all cities fail, use fallback mock data
+          console.warn("All weather API calls failed, using mock data");
+          setWeather({
+            currentTemp: 22,
+            tomorrowTemp: 20,
+            condition: "Clear",
+            location: originalCityName || city || "Unknown",
+            feelsLike: 22,
+            humidity: 50,
+            windSpeed: 10,
+            icon: "01d",
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Safely extract tomorrow's forecast
+        let tomorrowTemp = Math.round(currentData.main.temp + 2);
+        if (forecastData && forecastData.list && forecastData.list.length > 0) {
+          const today = new Date();
+          const tomorrowDate = new Date(today);
+          tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+
+          // Find tomorrow's forecast (noon-ish)
+          const tomorrowForecast = forecastData.list.find(
+            (item: ForecastList) => {
+              const itemDate = new Date(item.dt * 1000);
+              return (
+                itemDate.getDate() === tomorrowDate.getDate() &&
+                itemDate.getMonth() === tomorrowDate.getMonth() &&
+                itemDate.getFullYear() === tomorrowDate.getFullYear() &&
+                itemDate.getHours() >= 12 &&
+                itemDate.getHours() <= 15
+              );
+            },
+          );
+
+          if (tomorrowForecast) {
+            tomorrowTemp = Math.round(tomorrowForecast.main.temp);
+          }
+        }
+
+        // Extract weather data
         setWeather({
           currentTemp: Math.round(currentData.main.temp),
-          tomorrowTemp: tomorrow
-            ? Math.round(tomorrow.main.temp)
-            : Math.round(currentData.main.temp + 2),
+          tomorrowTemp: tomorrowTemp,
           condition: currentData.weather?.[0]?.description || "Clear",
-          location: currentData.name || city || "Unknown",
+          location: originalCityName || currentData.name || city || "Unknown",
           feelsLike: Math.round(currentData.main.feels_like),
           humidity: currentData.main.humidity,
-          windSpeed: Math.round(currentData.wind.speed * 3.6), // Convert m/s to km/h
+          windSpeed: Math.round(currentData.wind?.speed * 3.6 || 0),
           icon: currentData.weather?.[0]?.icon || "01d",
         });
       } catch (err) {
         console.error("Error fetching weather:", err);
         setError("Could not fetch weather");
-        // Fallback to mock data in Celsius
+        // Fallback to mock data
         setWeather({
           currentTemp: 22,
           tomorrowTemp: 20,
@@ -180,7 +267,6 @@ export function WeatherWidget() {
 
   // Get the appropriate weather icon based on OpenWeatherMap icon code
   const getWeatherIcon = (iconCode: string, condition: string) => {
-    // Map OpenWeatherMap icon codes to Lucide icons
     if (iconCode) {
       const code = iconCode.substring(0, 2);
       if (code === "01" || code === "02") {
@@ -198,7 +284,6 @@ export function WeatherWidget() {
       }
     }
 
-    // Fallback based on condition text
     const cond = condition.toLowerCase();
     if (
       cond.includes("rain") ||
