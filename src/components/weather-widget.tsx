@@ -81,7 +81,7 @@ const getCityFromCoords = async (lat: number, lon: number) => {
 // Get a clean city name for API calls
 const getCleanCityName = (cityName: string): string => {
   // Remove "City of", "Metropolitan Municipality", etc.
-  let cleanName = cityName
+  const cleanName = cityName
     .replace(/City of /i, "")
     .replace(/Metropolitan Municipality/i, "")
     .replace(/Local Municipality/i, "")
@@ -163,7 +163,7 @@ export function WeatherWidget() {
         // Try to fetch weather with fallback cities if needed
         let currentData: OpenWeatherMapResponse | null = null;
         let forecastData: ForecastResponse | null = null;
-        let citiesToTry = [city, "Johannesburg", "Cape Town", "London"];
+        const citiesToTry = [city, "Johannesburg", "Cape Town", "London"];
 
         for (const tryCity of citiesToTry) {
           try {

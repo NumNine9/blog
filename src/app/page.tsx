@@ -6,7 +6,7 @@ import { PaginationDemo } from "@/components/pagination-demo";
 import { NewspaperHeader } from "@/components/newspaper-header";
 import { WeatherWidget } from "@/components/weather-widget";
 import { DateDisplay } from "@/components/date-display";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { BlogPost, supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,7 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 3;
 
-  const fetchPostsData = async () => {
+  const fetchPostsData = useCallback(async () => {
     setLoading(true);
     try {
       // Get total count for pagination
@@ -64,7 +64,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, pageSize]); // Add dependencies here
 
   useEffect(() => {
     const checkUser = async () => {
@@ -83,7 +83,7 @@ export default function Home() {
 
     checkUser();
     fetchPostsData();
-  }, [currentPage]);
+  }, [fetchPostsData]); // Now fetchPostsData is stable and won't cause unnecessary re-renders
 
   const handleSignOut = async () => {
     try {
