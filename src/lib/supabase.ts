@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
 export type ContentItem =
   | {
       type: "internal";
@@ -34,7 +35,7 @@ export type ContentItem =
       content: string | null;
       id: string; // Using URL as ID for external content
     };
-// const SUPABASE_SERVICE_ROLE_KEY=process.env.SUPABASE_SERVICE_ROLE_KEY; // Not exposed to browser!
+
 export type BlogPost = {
   id: number;
   created_at?: string;
@@ -53,10 +54,11 @@ export type BlogPost = {
   external_source?: string; // For external content source name
   original_url?: string; // For external content original link
 };
+
 export const fetchPagePosts = async (
   page = 1,
   pageSize = 3,
-  category = "general"
+  category = "general",
 ) => {
   const { data, error } = await supabase
     .from("blogPosts")
@@ -84,6 +86,7 @@ export const fetchPagePosts = async (
   const combinedData = [...internalWithType, ...externalWithType];
   return combinedData as BlogPost[];
 };
+
 export type BlogFormData = {
   title: string;
   author: string;
@@ -112,10 +115,21 @@ export interface NewsResponse {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-export const signUp = async (email: string, password: string) => {
+
+// UPDATED: SignUp function with name support
+export const signUp = async (
+  email: string,
+  password: string,
+  name?: string,
+) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: {
+        name: name || email.split("@")[0], // Use name or fallback to email username
+      },
+    },
   });
 
   if (error) {
@@ -123,9 +137,31 @@ export const signUp = async (email: string, password: string) => {
     return { error: error.message };
   }
 
-  return { user: data.user };
+  // Optional: Also insert into a custom users table if you have one
+  if (data.user && name) {
+    try {
+      const { error: insertError } = await supabase.from("users").upsert(
+        {
+          id: data.user.id,
+          email: email,
+          name: name,
+          created_at: new Date().toISOString(),
+        },
+        { onConflict: "id" },
+      );
+
+      if (insertError) {
+        console.warn("Could not insert user into users table:", insertError);
+      }
+    } catch (err) {
+      console.warn("Error inserting user into users table:", err);
+    }
+  }
+
+  return { user: data.user, error: null };
 };
 
+// Updated signIn function to return consistent format
 export const signIn = async (email: string, password: string) => {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -134,10 +170,10 @@ export const signIn = async (email: string, password: string) => {
 
   if (error) {
     console.error("Signin error:", error.message);
-    return { error: error.message };
+    return { error: error.message, user: null };
   }
 
-  return { user: data.user };
+  return { user: data.user, error: null };
 };
 
 export const addBlogPost = async (post: BlogPost) => {
@@ -153,6 +189,7 @@ export const addBlogPost = async (post: BlogPost) => {
 
   return data;
 };
+
 export const fetchPosts = async () => {
   const { data, error } = await supabase
     .from("blogPosts")
@@ -163,4 +200,47 @@ export const fetchPosts = async () => {
     return [];
   }
   return data;
+};
+// This function was mixing internal and external content.
+// If you want to keep it for the external content, here's a cleaner version:
+
+export const fetchPagePostsWithExternal = async (
+  page = 1,
+  pageSize = 3,
+  category = "general",
+) => {
+  // Fetch internal posts
+  const { data: internalData, error: internalError } = await supabase
+    .from("blogPosts")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .range((page - 1) * pageSize, page * pageSize - 1);
+
+  if (internalError) {
+    console.error("Error fetching posts:", internalError);
+    return [];
+  }
+
+  const internalWithType = (internalData || []).map((post) => ({
+    ...post,
+    source_type: "internal" as const,
+  }));
+
+  // Fetch external content from NewsAPI
+  try {
+    const externalResponse = await fetch(`/api/news?category=${category}`);
+    const externalData = await externalResponse.json();
+    const externalWithType = (externalData.articles || []).map(
+      (article: any) => ({
+        ...article,
+        source_type: "external" as const,
+        id: article.url || Math.random().toString(), // Ensure each external article has an id
+      }),
+    );
+
+    return [...internalWithType, ...externalWithType];
+  } catch (error) {
+    console.error("Error fetching external content:", error);
+    return internalWithType;
+  }
 };

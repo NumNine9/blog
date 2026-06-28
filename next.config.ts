@@ -4,15 +4,15 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   // images: {
-  //   remotePatterns: [new URL('cseiulqqvcunztldwmnc.supabase.co')], 
+  //   remotePatterns: [new URL('cseiulqqvcunztldwmnc.supabase.co')],
   // },
   images: {
-    // domains: ["cseiulqqvcunztldwmnc.supabase.co"],
+    domains: ["wlcrulbsekjvcjpiesiq.supabase.co"],
     // For Next.js 13+, you can also use `remotePatterns`:
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "cseiulqqvcunztldwmnc.supabase.co",
+        hostname: "wlcrulbsekjvcjpiesiq.supabase.co",
         pathname: "/storage/v1/object/public/blog-images/**",
       },
     ],

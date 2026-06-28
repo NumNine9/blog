@@ -7,75 +7,83 @@ import { NewspaperHeader } from "@/components/newspaper-header";
 import { WeatherWidget } from "@/components/weather-widget";
 import { DateDisplay } from "@/components/date-display";
 import { useEffect, useState } from "react";
-import { BlogPost, fetchPagePosts, supabase } from "@/lib/supabase";
+import { BlogPost, supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Loader } from "@/components/loader";
-// import { Article } from "@/lib/supabase";
-// import NewsCard from "@/components/NewsCard";
-// import SearchBar from "@/components/SearchBar";
-// import ContentFeed from "@/components/ContentFeed";
+
 export default function Home() {
   const router = useRouter();
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 3; // Number of posts per page
-  // const [articles, setArticles] = useState<Article[]>([]);
-  // const [loading, setLoading] = useState(true);
-  // const [category, setCategory] = useState("general");
+  const pageSize = 3;
+
   const fetchPostsData = async () => {
     setLoading(true);
     try {
-      // First fetch the total count of posts
-      const { count } = await supabase
+      // Get total count for pagination
+      const { count, error: countError } = await supabase
         .from("blogPosts")
         .select("*", { count: "exact", head: true });
 
-      // Calculate total pages
-      const calculatedTotalPages = Math.ceil((count || 0) / pageSize);
-      setTotalPages(calculatedTotalPages);
+      if (countError) {
+        console.error("Error fetching count:", countError);
+        return;
+      }
 
-      // Then fetch the paginated posts
-      const posts = await fetchPagePosts(currentPage, pageSize);
+      const calculatedTotalPages = Math.ceil((count || 0) / pageSize);
+      setTotalPages(calculatedTotalPages > 0 ? calculatedTotalPages : 1);
+
+      // Fetch paginated posts
+      const { data, error } = await supabase
+        .from("blogPosts")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+
+      if (error) {
+        console.error("Error fetching posts:", error);
+        setBlogPosts([]);
+        return;
+      }
+
+      // Map the data to match BlogPost type
+      const posts: BlogPost[] = (data || []).map((post) => ({
+        ...post,
+        source_type: "internal",
+      }));
+
       setBlogPosts(posts);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error("Error in fetchPostsData:", error);
+      setBlogPosts([]);
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data?.user) {
-        setUser(data.user);
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (data?.user) {
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Error checking user:", error);
+        setUser(null);
       }
-      setLoading(false);
     };
-    // const fetchNews = async () => {
-    //   setLoading(true);
-    //   try {
-    //     const response = await fetch(`/api/news?category=${category}`);
-    //     const data = await response.json();
-    //     setArticles(data.articles);
-    //   } catch (error) {
-    //     console.error("Error fetching news:", error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-    // fetchNews();
+
     checkUser();
     fetchPostsData();
-  }, [
-    currentPage,
-    // user,
-    // , category
-  ]); // Add currentPage as dependency
+  }, [currentPage]);
 
   const handleSignOut = async () => {
     try {
@@ -83,36 +91,42 @@ export default function Home() {
 
       if (error) {
         console.error("Error signing out:", error.message);
+        toast.error("Error signing out", {
+          duration: 4000,
+          position: "bottom-center",
+          style: { backgroundColor: "#fc5659" },
+          icon: "❌",
+        });
         return;
       }
+
+      setUser(null);
       toast.success("You have signed out", {
         duration: 4000,
         position: "bottom-center",
         style: { backgroundColor: "#99f598" },
         icon: "👏",
-        iconTheme: {
-          primary: "#99f598",
-          secondary: "#99f598",
-        },
-        ariaProps: {
-          role: "status",
-          "aria-live": "polite",
-        },
-        removeDelay: 2000,
       });
 
       router.refresh();
-      router.push("/");
     } catch (error) {
       console.error("Unexpected error:", error);
+      toast.error("An unexpected error occurred", {
+        duration: 4000,
+        position: "bottom-center",
+        style: { backgroundColor: "#fc5659" },
+        icon: "❌",
+      });
     }
   };
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    // Optional: scroll to top when page changes
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Check if there are any posts
+  const hasPosts = blogPosts.length > 0;
 
   return (
     <main className="max-w-[1200px] mx-auto px-4 py-8 bg-[#f9f7f1]">
@@ -125,47 +139,38 @@ export default function Home() {
 
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-2xl font-bold font-serif">LATEST STORIES</h2>
-        <Button
-          asChild
-          className="bg-black text-white hover:bg-gray-800 rounded-none"
-        >
-          {user ? (
-            <Link href="/admin/create">SUBMIT ARTICLE</Link>
-          ) : (
-            <Link href="/signup">SUBMIT ARTICLE</Link>
-          )}
-        </Button>
-        {user && (
+        <div className="flex gap-2">
           <Button
             asChild
-            onClick={() => handleSignOut()}
-            className="bg-[#3d4a4a] text-white hover:bg-gray-800 rounded-none mr-[3px] border-white cursor-pointer hover:cursor-pointer"
+            className="bg-black text-white hover:bg-gray-800 rounded-none"
           >
-            <p>Sign Out</p>
+            {user ? (
+              <Link href="/admin/create">SUBMIT ARTICLE</Link>
+            ) : (
+              <Link href="/signup">SUBMIT ARTICLE</Link>
+            )}
           </Button>
-        )}
-      </div>
-      {/* <ContentFeed internalContent={blogPosts} externalContent={articles} /> */}
-      {/* <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center mb-6">
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="px-4 py-2 border rounded-md"
-          >
-            <option value="general">General</option>
-            <option value="business">Business</option>
-            <option value="entertainment">Entertainment</option>
-            <option value="health">Health</option>
-            <option value="science">Science</option>
-            <option value="sports">Sports</option>
-            <option value="technology">Technology</option>
-          </select>
+          {user && (
+            <Button
+              onClick={handleSignOut}
+              className="bg-[#3d4a4a] text-white hover:bg-gray-800 rounded-none border-white cursor-pointer"
+            >
+              Sign Out
+            </Button>
+          )}
         </div>
-      </div> */}
+      </div>
+
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <Loader />
+        </div>
+      ) : !hasPosts ? (
+        <div className="text-center py-16 border-4 border-dashed border-gray-300">
+          <h3 className="text-2xl font-serif text-gray-500 mb-4">
+            No articles published yet
+          </h3>
+          <p className="text-gray-400">Be the first to submit an article!</p>
         </div>
       ) : (
         <>
@@ -184,11 +189,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article, index) => (
-              <NewsCard key={index} article={article} />
-            ))}
-          </div> */}
 
           {totalPages > 1 && (
             <div className="mt-8 flex justify-center">

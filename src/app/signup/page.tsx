@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +14,7 @@ export default function AuthForm() {
   const [isSignIn, setIsSignIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -22,46 +22,25 @@ export default function AuthForm() {
     setIsLoading(true);
 
     try {
-      let data;
+      let result;
       if (isSignIn) {
-        data = await signIn(email, password); // Await sign-in
-        console.log("Signing in:", data);
+        result = await signIn(email, password);
+        console.log("Signing in:", result);
       } else {
-        data = await signUp(email, password); // Await sign-up
-        console.log("Signing up:", data);
+        // Pass the name to signUp
+        result = await signUp(email, password, name);
+        console.log("Signing up:", result);
       }
 
-      if (data?.error) {
-        console.error("Authentication error:", data?.error);
-        // alert(`Error: ${data.error}`);
-        toast.error(`Error: ${data.error}`, {
+      if (result?.error) {
+        console.error("Authentication error:", result.error);
+        toast.error(`Error: ${result.error}`, {
           duration: 4000,
           position: "bottom-center",
-
-          // Styling
           style: { backgroundColor: "#fc5659" },
-          className: "",
-
-          // Custom Icon
           icon: "❌",
-
-          // Change colors of success/error/loading icon
-          iconTheme: {
-            primary: "#99f598",
-            secondary: "#99f598",
-          },
-
-          // Aria
-          ariaProps: {
-            role: "status",
-            "aria-live": "polite",
-          },
-
-          // Additional Configuration
-          removeDelay: 2000,
         });
       } else {
-        // alert(isSignIn ? "Login successful!" : "Signup successful! Check your email.");
         toast.success(
           isSignIn
             ? "Login successful!"
@@ -69,70 +48,26 @@ export default function AuthForm() {
           {
             duration: 4000,
             position: "bottom-center",
-
-            // Styling
             style: { backgroundColor: "#99f598" },
-            className: "",
-
-            // Custom Icon
             icon: "👏",
-
-            // Change colors of success/error/loading icon
-            iconTheme: {
-              primary: "#99f598",
-              secondary: "#99f598",
-            },
-
-            // Aria
-            ariaProps: {
-              role: "status",
-              "aria-live": "polite",
-            },
-
-            // Additional Configuration
-            removeDelay: 2000,
-          }
+          },
         );
+
         if (isSignIn) {
-          router.push("/admin/create"); // Redirect after success
+          router.push("/admin/create");
         } else {
-          // window.location.href =
-          // Store email in localStorage
           localStorage.setItem("signupEmail", email);
           localStorage.setItem("signupPassword", password);
           router.push("/confirm");
         }
-
-        // router.push("/admin/create")
       }
     } catch (error) {
       console.error("Unexpected error:", error);
-      // alert("An unexpected error occurred. Please try again.");
       toast.error("An unexpected error occurred. Please try again.", {
         duration: 4000,
         position: "bottom-center",
-
-        // Styling
         style: { backgroundColor: "#fc5659" },
-        className: "",
-
-        // Custom Icon
         icon: "❌",
-
-        // Change colors of success/error/loading icon
-        iconTheme: {
-          primary: "#99f598",
-          secondary: "#99f598",
-        },
-
-        // Aria
-        ariaProps: {
-          role: "status",
-          "aria-live": "polite",
-        },
-
-        // Additional Configuration
-        removeDelay: 2000,
       });
     } finally {
       setIsLoading(false);
@@ -176,6 +111,8 @@ export default function AuthForm() {
               </Label>
               <Input
                 id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="JOHN DOE"
                 required={!isSignIn}
                 disabled={isLoading}
