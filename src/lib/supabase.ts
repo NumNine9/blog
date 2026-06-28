@@ -231,7 +231,7 @@ export const fetchPagePostsWithExternal = async (
     const externalResponse = await fetch(`/api/news?category=${category}`);
     const externalData = await externalResponse.json();
     const externalWithType = (externalData.articles || []).map(
-      (article: any) => ({
+      (article: Article) => ({
         ...article,
         source_type: "external" as const,
         id: article.url || Math.random().toString(), // Ensure each external article has an id
