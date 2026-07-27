@@ -38,6 +38,7 @@ export default function CreateBlogPost() {
   useEffect(() => {
     const checkUser = async () => {
       const { data } = await supabase.auth.getUser();
+      // console.log("USER DATA", data.user?.user_metadata.name);
       if (!data?.user) {
         toast.error("Please log in to add a blog post.", {
           duration: 4000,
@@ -47,6 +48,8 @@ export default function CreateBlogPost() {
         });
         router.push("/signup");
         return;
+      } else {
+        setAuthor(data.user.user_metadata.name);
       }
       setLoading(false);
     };
@@ -190,7 +193,7 @@ export default function CreateBlogPost() {
               id="author"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              placeholder="Enter author name"
+              placeholder={author}
               className="font-serif rounded-none border-black"
               required
             />
