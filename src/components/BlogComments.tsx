@@ -320,9 +320,9 @@ export default function BlogComments({ postId, supabase }: CommentsProps) {
       setNewComment("");
       setReplyingTo(null);
       toast.success("Comment posted (pending approval)");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to post comment");
-      console.error(err);
+    } catch (error) {
+      // toast.error(error.message || "Failed to post comment");
+      console.error(error);
     } finally {
       setSubmitting(false);
     }
@@ -381,7 +381,7 @@ export default function BlogComments({ postId, supabase }: CommentsProps) {
           .insert({ comment_id: commentId, user_id: user.id });
         if (error) throw error;
       }
-    } catch (err: any) {
+    } catch (error) {
       // Rollback
       setComments((prev) => {
         const newComments = [...prev];
@@ -397,7 +397,7 @@ export default function BlogComments({ postId, supabase }: CommentsProps) {
         return newComments;
       });
       toast.error("Failed to update like");
-      console.error(err);
+      console.error(error);
     }
   };
 
