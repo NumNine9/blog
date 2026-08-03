@@ -198,10 +198,10 @@ export default function BlogComments({ postId, supabase }: CommentsProps) {
         } else {
           setCursor(null);
         }
-      } catch (err: any) {
-        setError(err.message || "Failed to load comments");
+      } catch (error) {
+        // setError(err.message || "Failed to load comments");
         toast.error("Failed to load comments");
-        console.error(err);
+        console.error(error);
       } finally {
         setLoading(false);
       }
