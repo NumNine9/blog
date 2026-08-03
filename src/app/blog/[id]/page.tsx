@@ -12,6 +12,7 @@ import { altPic } from "@/components/blog-article";
 import toast, { Toaster } from "react-hot-toast";
 import MDEditor from "@uiw/react-md-editor";
 import { Loader } from "@/components/loader";
+import BlogComments from "@/components/BlogComments";
 
 // interface BlogPostPageProps {
 //   params: {
@@ -213,6 +214,7 @@ export default function BlogPostPage({
           <div className="mt-8 pt-4 border-t border-black text-sm italic">
             This article first appeared in The Commit Log on {formattedDate}
           </div>
+          <BlogComments postId={id} supabase={supabase} />
           <Toaster />
         </article>
       ) : (
