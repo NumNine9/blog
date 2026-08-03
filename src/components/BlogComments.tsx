@@ -6,6 +6,23 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 
 // ---------- Types ----------
+export type CommentStatus = "pending" | "approved" | "spam" | "hidden";
+
+interface Comment {
+  id: number;
+  blog_post_id: number;
+  user_id: string;
+  parent_comment_id: number | null;
+  content: string;
+  status: CommentStatus;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  profile?: Profile | null;
+  total_likes: number;
+  current_user_liked: boolean;
+  replies?: Comment[];
+}
 interface Profile {
   id: string;
   username?: string;
@@ -19,11 +36,11 @@ interface Comment {
   user_id: string;
   parent_comment_id: number | null;
   content: string;
-  status: string;
+  // status: string;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-  profile?: Profile;
+  // profile?: Profile;
   username: string;
   total_likes: number;
   current_user_liked: boolean;
@@ -163,7 +180,7 @@ export default function BlogComments({ postId, supabase }: CommentsProps) {
         });
 
         // 4. Merge
-        const formatted: Comment[] = commentsData.map((item: any) => ({
+        const formatted: Comment[] = commentsData.map((item: Comment) => ({
           ...item,
           total_likes: likesMap[item.id]?.total || 0,
           current_user_liked: likesMap[item.id]?.currentUserLiked || false,
