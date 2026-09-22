@@ -178,14 +178,23 @@ export default function Home() {
             {/* Featured article - spans 8 columns */}
             <div className="lg:col-span-8 border-r border-gray-400 pr-6">
               {blogPosts[0] && (
-                <BlogArticle post={blogPosts[0]} featured={true} />
+                <BlogArticle
+                  post={blogPosts[0]}
+                  featured={true}
+                  viewCount={blogPosts[0].views}
+                />
               )}
             </div>
 
             {/* Side articles - span 4 columns */}
             <div className="lg:col-span-4 space-y-6">
               {blogPosts.slice(1, 3).map((post) => (
-                <BlogArticle key={post.id} post={post} featured={false} />
+                <BlogArticle
+                  key={post.id}
+                  post={post}
+                  viewCount={post.views}
+                  featured={false}
+                />
               ))}
             </div>
           </div>

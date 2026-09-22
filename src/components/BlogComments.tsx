@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { SupabaseClient, User } from "@supabase/supabase-js";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 // ---------- Types ----------
 export type CommentStatus = "pending" | "approved" | "spam" | "hidden";
@@ -537,13 +538,22 @@ export default function BlogComments({ postId, supabase }: CommentsProps) {
           </div>
         </form>
       ) : (
-        <div className="bg-gray-50 p-4 rounded-lg text-center text-gray-600 mb-6">
+        <>
+          {/* <div className="bg-gray-50 p-4 rounded-lg text-center text-gray-600 mb-6">
           Please{" "}
           <a href="/login" className="text-blue-600 hover:underline">
             log in
           </a>{" "}
           to join the discussion.
-        </div>
+        </div> */}
+          <div className="bg-gray-50 p-4 rounded-lg text-center text-gray-600 mb-6">
+            Please{" "}
+            <Link className="text-blue-600 hover:underline" href="/signup">
+              log in
+            </Link>
+            to join the discussion.
+          </div>
+        </>
       )}
 
       {loading && comments.length === 0 ? (

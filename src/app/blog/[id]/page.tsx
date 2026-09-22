@@ -160,6 +160,13 @@ export default function BlogPostPage({
             >
               {blog?.category}
             </Badge>
+            <Badge
+              variant="outline"
+              className="rounded-none uppercase font-bold border-black"
+            >
+              {blog?.views}{" "}
+              <span className="text-base leading-8">&#128065;</span>
+            </Badge>
             {blog?.tags.map((tag) => (
               <Badge key={tag} variant="secondary" className="rounded-none">
                 {tag}
