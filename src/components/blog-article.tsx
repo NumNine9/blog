@@ -58,10 +58,24 @@ export function BlogArticle({
           <time className="italic">{formattedDate}</time>
         </div>
 
-        <Link href={`/blog/${post?.id}`} className="group">
+        {/* <Link href={`/blog/${post?.id}`} className="group">
           <h3
             className={cn(
               "font-bold font-serif uppercase tracking-tight group-hover:underline",
+              featured ? "text-3xl md:text-4xl" : "text-xl",
+            )}
+          >
+            {post?.title}...
+          </h3>
+        </Link> */}
+        <Link
+          href={`/blog/${post?.id}`}
+          className="group active:text-[#6E6A69]"
+        >
+          <h3
+            className={cn(
+              "font-bold font-serif uppercase tracking-tight group-hover:underline group-active:text-[#6E6A69] transition-colors duration-150",
+              "decoration-1",
               featured ? "text-3xl md:text-4xl" : "text-xl",
             )}
           >
