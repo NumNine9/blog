@@ -7,7 +7,7 @@ import { ArrowLeft, ScanEye } from "lucide-react";
 import { NewspaperHeader } from "@/components/newspaper-header";
 import { DateDisplay } from "@/components/date-display";
 import { BlogPost, supabase } from "@/lib/supabase";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { altPic } from "@/components/blog-article";
 import toast, { Toaster } from "react-hot-toast";
 import MDEditor from "@uiw/react-md-editor";
@@ -27,6 +27,7 @@ export default function BlogPostPage({
 }) {
   const { id } = use(params);
   const [blog, setBlog] = useState<BlogPost>();
+  const viewedRef = useRef<number | null>(null);
   // Fetch the specific blog post
   useEffect(() => {
     async function loadBlog() {
@@ -34,74 +35,66 @@ export default function BlogPostPage({
         // setLoading(true);
         // setError(null);
 
+        // id from the route is a string; convert for bigint column + rpc
+        const numericId = Number(id);
+
         const { data, error: supabaseError } = await supabase
           .from("blogPosts")
           .select("*")
-          .eq("id", id)
+          .eq("id", numericId)
           .single();
 
-        if (supabaseError) {
-          throw supabaseError;
-        }
+        if (supabaseError) throw supabaseError;
 
         if (data) {
-          setBlog(data as BlogPost);
+          // Guard against double-counting (React Strict Mode in dev / re-renders)
+          if (viewedRef.current !== numericId) {
+            viewedRef.current = numericId;
+
+            const { error: rpcError } = await supabase.rpc("increment_views", {
+              post_id: numericId,
+            });
+
+            if (rpcError) {
+              console.error("Failed to increment views:", rpcError);
+            }
+          }
+
+          setBlog({ ...(data as BlogPost), views: (data.views ?? 0) + 1 });
         } else {
-          // alert('Blog post not found');
           toast.error("Blog post not found", {
             duration: 4000,
             position: "bottom-center",
-
-            // Styling
             style: { backgroundColor: "#fc5659" },
             className: "",
-
-            // Custom Icon
             icon: "❌",
-
-            // Change colors of success/error/loading icon
             iconTheme: {
               primary: "#99f598",
               secondary: "#99f598",
             },
-
-            // Aria
             ariaProps: {
               role: "status",
               "aria-live": "polite",
             },
-
-            // Additional Configuration
             removeDelay: 2000,
           });
         }
       } catch (err) {
         console.error("Error loading blog post:", err);
-        // alert('Failed to load blog post');
         toast.error("Failed to load blog post", {
           duration: 4000,
           position: "bottom-center",
-
-          // Styling
           style: { backgroundColor: "#fc5659" },
           className: "",
-
-          // Custom Icon
           icon: "❌",
-
-          // Change colors of success/error/loading icon
           iconTheme: {
             primary: "#99f598",
             secondary: "#99f598",
           },
-
-          // Aria
           ariaProps: {
             role: "status",
             "aria-live": "polite",
           },
-
-          // Additional Configuration
           removeDelay: 2000,
         });
         // setBlog(null);
