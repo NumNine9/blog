@@ -306,8 +306,9 @@ export default function CreateBlogPost() {
                 <div className="text-sm text-amber-800">
                   <p className="font-medium">Publishing is currently limited</p>
                   <p className="text-amber-700">
-                    Only administrators can publish articles right now. We're
-                    working on opening this up soon — thanks for your patience!
+                    Only administrators can publish articles right now.
+                    We&apos;re working on opening this up soon — thanks for your
+                    patience!
                   </p>
                 </div>
               </div>
