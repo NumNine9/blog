@@ -42,9 +42,11 @@ export default function CreateBlogPost() {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      // console.log("USER DATA", data.user?.user_metadata.name);
-      if (!data?.user) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      console.log("USER DATA", user);
+      if (!user) {
         toast.error("Please log in to add a blog post.", {
           duration: 4000,
           position: "bottom-center",
@@ -54,10 +56,10 @@ export default function CreateBlogPost() {
         router.push("/signup");
         return;
       } else {
-        setAuthor(data.user.user_metadata.name);
+        setAuthor(user.user_metadata.name);
       }
 
-      if (data.user.email === "nyagura.george@gmail.com") {
+      if (user.email === "gnyagura57@gmail.com") {
         setIsAdmin(true);
       }
       setLoading(false);
