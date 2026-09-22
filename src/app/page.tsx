@@ -10,13 +10,14 @@ import { useEffect, useState, useCallback } from "react";
 import { BlogPost, supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { Loader } from "@/components/loader";
-
+import { Loader2 } from "lucide-react";
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSubmit, setIsSubmit] = useState(false);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -143,12 +144,14 @@ export default function Home() {
           <Button
             asChild
             className="bg-black text-white hover:bg-gray-800 rounded-none"
+            onClick={() => {
+              setIsSubmit(!isSubmit);
+            }}
           >
-            {user ? (
-              <Link href="/admin/create">SUBMIT ARTICLE</Link>
-            ) : (
-              <Link href="/signup">SUBMIT ARTICLE</Link>
-            )}
+            <Link href={user ? "/admin/create" : "/signup"}>
+              {isSubmit && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {isSubmit ? "LOADING..." : "SUBMIT ARTICLE"}
+            </Link>
           </Button>
           {user && (
             <Button
@@ -210,6 +213,7 @@ export default function Home() {
           )}
         </>
       )}
+      <Toaster />
     </main>
   );
 }
