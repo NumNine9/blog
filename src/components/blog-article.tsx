@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { BlogPost } from "@/lib/supabase";
+import { ScanEye } from "lucide-react";
 
 // interface Post {
 //   id: string
@@ -53,6 +54,7 @@ export function BlogArticle({
           </Badge>
           <Badge variant="secondary" className="">
             {`${viewCount} Views`}
+            <ScanEye className="w-4 h-4 text-gray-500" />
           </Badge>
 
           <time className="italic">{formattedDate}</time>

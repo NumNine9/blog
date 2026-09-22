@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ScanEye } from "lucide-react";
 import { NewspaperHeader } from "@/components/newspaper-header";
 import { DateDisplay } from "@/components/date-display";
 import { BlogPost, supabase } from "@/lib/supabase";
@@ -164,8 +164,7 @@ export default function BlogPostPage({
               variant="outline"
               className="rounded-none uppercase font-bold border-black"
             >
-              {blog?.views}{" "}
-              <span className="text-base leading-8">&#128065;</span>
+              {blog?.views} <ScanEye className="w-4 h-4 text-gray-500" />
             </Badge>
             {blog?.tags.map((tag) => (
               <Badge key={tag} variant="secondary" className="rounded-none">

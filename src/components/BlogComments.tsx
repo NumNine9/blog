@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 
 // ---------- Types ----------
-export type CommentStatus = "pending" | "approved" | "spam" | "hidden";
+export type CommentStatus = "approved" | "spam" | "hidden";
 
 interface Comment {
   id: number;
@@ -132,7 +132,7 @@ export default function BlogComments({ postId, supabase }: CommentsProps) {
             `,
           )
           .eq("blog_post_id", postId)
-          .eq("status", "pending")
+          .eq("status", "approved")
           .is("deleted_at", null)
           .order("created_at", { ascending: false })
           .limit(20);
@@ -283,7 +283,7 @@ export default function BlogComments({ postId, supabase }: CommentsProps) {
           user_id: user.id,
           content: newComment.trim(),
           parent_comment_id: replyingTo,
-          status: "pending",
+          status: "approved",
         })
         .select()
         .single();
@@ -437,9 +437,9 @@ export default function BlogComments({ postId, supabase }: CommentsProps) {
               <span className="text-xs text-gray-400">
                 {new Date(comment.created_at).toLocaleDateString()}
               </span>
-              {comment.status === "pending" && (
-                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">
-                  pending
+              {comment.status === "approved" && (
+                <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">
+                  approved
                 </span>
               )}
             </div>
