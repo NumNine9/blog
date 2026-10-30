@@ -13,7 +13,8 @@ import toast, { Toaster } from "react-hot-toast";
 import MDEditor from "@uiw/react-md-editor";
 import { Loader } from "@/components/loader";
 import BlogComments from "@/components/BlogComments";
-
+import { SponsorGate } from "@/components/SponsorGate";
+import type { SponsorDecision } from "@/lib/sponsor/types";
 // interface BlogPostPageProps {
 //   params: {
 //     id: string
@@ -27,86 +28,75 @@ export default function BlogPostPage({
 }) {
   const { id } = use(params);
   const [blog, setBlog] = useState<BlogPost>();
+  const [sponsor, setSponsor] = useState<SponsorDecision | null>(null);
   const viewedRef = useRef<number | null>(null);
   // Fetch the specific blog post
   useEffect(() => {
-    async function loadBlog() {
-      try {
-        // setLoading(true);
-        // setError(null);
+  let cancelled = false;
 
-        // id from the route is a string; convert for bigint column + rpc
-        const numericId = Number(id);
+  async function load() {
+    const numericId = Number(id);
 
-        const { data, error: supabaseError } = await supabase
-          .from("blogPosts")
-          .select("*")
-          .eq("id", numericId)
-          .single();
+    const [blogResult, sponsorResult] = await Promise.allSettled([
+      supabase.from("blogPosts").select("*").eq("id", numericId).single(),
+      fetch(
+        `/api/sponsor?placement=pre_article&articleId=${encodeURIComponent(
+          id
+        )}`,
+        { cache: "no-store" }
+      ).then((r) => r.json()),
+    ]);
 
-        if (supabaseError) throw supabaseError;
+    if (cancelled) return;
 
-        if (data) {
-          // Guard against double-counting (React Strict Mode in dev / re-renders)
-          if (viewedRef.current !== numericId) {
-            viewedRef.current = numericId;
+    // --- Blog ---
+    if (
+      blogResult.status === "fulfilled" &&
+      !blogResult.value.error &&
+      blogResult.value.data
+    ) {
+      const data = blogResult.value.data;
 
-            const { error: rpcError } = await supabase.rpc("increment_views", {
-              post_id: numericId,
-            });
-
-            if (rpcError) {
-              console.error("Failed to increment views:", rpcError);
-            }
-          }
-
-          setBlog({ ...(data as BlogPost), views: (data.views ?? 0) + 1 });
-        } else {
-          toast.error("Blog post not found", {
-            duration: 4000,
-            position: "bottom-center",
-            style: { backgroundColor: "#fc5659" },
-            className: "",
-            icon: "❌",
-            iconTheme: {
-              primary: "#99f598",
-              secondary: "#99f598",
-            },
-            ariaProps: {
-              role: "status",
-              "aria-live": "polite",
-            },
-            removeDelay: 2000,
-          });
-        }
-      } catch (err) {
-        console.error("Error loading blog post:", err);
-        toast.error("Failed to load blog post", {
-          duration: 4000,
-          position: "bottom-center",
-          style: { backgroundColor: "#fc5659" },
-          className: "",
-          icon: "❌",
-          iconTheme: {
-            primary: "#99f598",
-            secondary: "#99f598",
-          },
-          ariaProps: {
-            role: "status",
-            "aria-live": "polite",
-          },
-          removeDelay: 2000,
+      if (viewedRef.current !== numericId) {
+        viewedRef.current = numericId;
+        const { error: rpcError } = await supabase.rpc("increment_views", {
+          post_id: numericId,
         });
-        // setBlog(null);
-      } finally {
-        // setLoading(false);
+        if (rpcError) {
+          console.error("Failed to increment views:", rpcError);
+        }
       }
+
+      setBlog({ ...(data as BlogPost), views: (data.views ?? 0) + 1 });
+    } else {
+      toast.error("Blog post not found", {
+        duration: 4000,
+        position: "bottom-center",
+        style: { backgroundColor: "#fc5659" },
+        className: "",
+        icon: "❌",
+        iconTheme: { primary: "#99f598", secondary: "#99f598" },
+        ariaProps: { role: "status", "aria-live": "polite" },
+        removeDelay: 2000,
+      });
     }
 
-    if (id) {
-      loadBlog();
+    // --- Sponsor (failsafe: null on any problem) ---
+    if (
+      sponsorResult.status === "fulfilled" &&
+      sponsorResult.value &&
+      sponsorResult.value.sponsor
+    ) {
+      setSponsor(sponsorResult.value.sponsor as SponsorDecision);
     }
-  }, [id]);
+  }
+
+  if (id) load();
+
+  return () => {
+    cancelled = true;
+  };
+}, [id]);
   // const { data } = await supabase
   //   .from('blogPosts')
   //   .select('*')
@@ -221,6 +211,10 @@ export default function BlogPostPage({
           {/* <p>Loading posts...</p> */}
           <Loader />
         </div>
+      )}
+
+       {blog && sponsor && (
+        <SponsorGate sponsor={sponsor} articleId={id} />
       )}
     </main>
   );
