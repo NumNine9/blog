@@ -2,9 +2,12 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-@tailwind base;
+@import "tailwindcss";
+
+/* Old v3 syntax (remove this) */
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
 
 @theme inline {
   --color-background: var(--background);

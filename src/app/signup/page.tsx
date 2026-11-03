@@ -63,7 +63,8 @@ export default function AuthForm() {
         // Small delay to show the loading state
         setTimeout(() => {
           if (isSignIn) {
-            router.push("/admin/create");
+            // router.push("/admin/create");
+            router.push("/admin/sponsors");   // ← changed
           } else {
             localStorage.setItem("signupEmail", email);
             localStorage.setItem("signupPassword", password);

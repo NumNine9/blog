@@ -1,5 +1,13 @@
 export type GateCookie = { count: number; day: string; lastShown: number };
 
+
+// development values
+// export const MAX_PER_DAY = 1000;
+// export const MIN_INTERVAL_MS = 0;
+// export const SKIP_MS = 1000; // 1 second instead of 24h
+
+
+// production values
 export const MAX_PER_DAY = 3;
 export const MIN_INTERVAL_MS = 10 * 60 * 1000; // 10 min between gates
 export const SKIP_MS = 24 * 60 * 60 * 1000;    // 24h skip after dismiss

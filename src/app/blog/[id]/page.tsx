@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -15,12 +16,7 @@ import { Loader } from "@/components/loader";
 import BlogComments from "@/components/BlogComments";
 import { SponsorGate } from "@/components/SponsorGate";
 import type { SponsorDecision } from "@/lib/sponsor/types";
-// interface BlogPostPageProps {
-//   params: {
-//     id: string
-//   }
-// }
-// { params }: BlogPostPageProps
+
 export default function BlogPostPage({
   params,
 }: {
@@ -30,81 +26,90 @@ export default function BlogPostPage({
   const [blog, setBlog] = useState<BlogPost>();
   const [sponsor, setSponsor] = useState<SponsorDecision | null>(null);
   const viewedRef = useRef<number | null>(null);
-  // Fetch the specific blog post
+
+  // Cache the in-flight sponsor fetch by id so Strict Mode's
+  // second effect invocation reuses it instead of double-fetching.
+  const sponsorFetchRef = useRef<{
+    id: string;
+    promise: Promise<{ sponsor: SponsorDecision | null }>;
+  } | null>(null);
+
   useEffect(() => {
-  let cancelled = false;
+    let cancelled = false;
 
-  async function load() {
-    const numericId = Number(id);
-
-    const [blogResult, sponsorResult] = await Promise.allSettled([
-      supabase.from("blogPosts").select("*").eq("id", numericId).single(),
-      fetch(
+    function getSponsorPromise(articleId: string) {
+      if (sponsorFetchRef.current?.id === articleId) {
+        return sponsorFetchRef.current.promise;
+      }
+      const promise = fetch(
         `/api/sponsor?placement=pre_article&articleId=${encodeURIComponent(
-          id
+          articleId
         )}`,
         { cache: "no-store" }
-      ).then((r) => r.json()),
-    ]);
+      ).then((r) => r.json() as Promise<{ sponsor: SponsorDecision | null }>);
+      sponsorFetchRef.current = { id: articleId, promise };
+      return promise;
+    }
 
-    if (cancelled) return;
+    async function load() {
+      const numericId = Number(id);
 
-    // --- Blog ---
-    if (
-      blogResult.status === "fulfilled" &&
-      !blogResult.value.error &&
-      blogResult.value.data
-    ) {
-      const data = blogResult.value.data;
+      const [blogResult, sponsorResult] = await Promise.allSettled([
+        supabase.from("blogPosts").select("*").eq("id", numericId).single(),
+        getSponsorPromise(id),
+      ]);
 
-      if (viewedRef.current !== numericId) {
-        viewedRef.current = numericId;
-        const { error: rpcError } = await supabase.rpc("increment_views", {
-          post_id: numericId,
-        });
-        if (rpcError) {
-          console.error("Failed to increment views:", rpcError);
+      if (cancelled) return;
+
+      // --- Blog ---
+      if (
+        blogResult.status === "fulfilled" &&
+        !blogResult.value.error &&
+        blogResult.value.data
+      ) {
+        const data = blogResult.value.data;
+
+        if (viewedRef.current !== numericId) {
+          viewedRef.current = numericId;
+          const { error: rpcError } = await supabase.rpc("increment_views", {
+            post_id: numericId,
+          });
+          if (rpcError) {
+            console.error("Failed to increment views:", rpcError);
+          }
         }
+
+        setBlog({ ...(data as BlogPost), views: (data.views ?? 0) + 1 });
+      } else {
+        toast.error("Blog post not found", {
+          duration: 4000,
+          position: "bottom-center",
+          style: { backgroundColor: "#fc5659" },
+          className: "",
+          icon: "❌",
+          iconTheme: { primary: "#99f598", secondary: "#99f598" },
+          ariaProps: { role: "status", "aria-live": "polite" },
+          removeDelay: 2000,
+        });
       }
 
-      setBlog({ ...(data as BlogPost), views: (data.views ?? 0) + 1 });
-    } else {
-      toast.error("Blog post not found", {
-        duration: 4000,
-        position: "bottom-center",
-        style: { backgroundColor: "#fc5659" },
-        className: "",
-        icon: "❌",
-        iconTheme: { primary: "#99f598", secondary: "#99f598" },
-        ariaProps: { role: "status", "aria-live": "polite" },
-        removeDelay: 2000,
-      });
+      // --- Sponsor (failsafe: null on any problem) ---
+      if (
+        sponsorResult.status === "fulfilled" &&
+        sponsorResult.value &&
+        sponsorResult.value.sponsor
+      ) {
+        setSponsor(sponsorResult.value.sponsor);
+      }
     }
 
-    // --- Sponsor (failsafe: null on any problem) ---
-    if (
-      sponsorResult.status === "fulfilled" &&
-      sponsorResult.value &&
-      sponsorResult.value.sponsor
-    ) {
-      setSponsor(sponsorResult.value.sponsor as SponsorDecision);
-    }
-  }
+    if (id) load();
 
-  if (id) load();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
-  return () => {
-    cancelled = true;
-  };
-}, [id]);
-  // const { data } = await supabase
-  //   .from('blogPosts')
-  //   .select('*')
-  //   .eq('id', params.id)
-  //   .single()
-
-  // setBlog(data)
-  // const blog: BlogPost = data
   const dateString: string | undefined = blog?.created_at;
   const date = dateString ? new Date(dateString) : new Date();
   const formattedDate = date.toLocaleDateString("en-US", {
@@ -185,11 +190,6 @@ export default function BlogPostPage({
             </div>
           </div>
 
-          {/* <div
-          className="prose prose-lg max-w-none font-serif prose-headings:font-serif prose-headings:uppercase prose-headings:font-bold"
-          dangerouslySetInnerHTML={{ __html: blog?.content || "no content" }} bg-[#f9f7f1]
-        /> */}
-
           <div className="container bg-white p-6 rounded-lg">
             <MDEditor.Markdown
               source={blog?.content || "no content"}
@@ -208,12 +208,11 @@ export default function BlogPostPage({
         </article>
       ) : (
         <div className="flex justify-center items-center h-64">
-          {/* <p>Loading posts...</p> */}
           <Loader />
         </div>
       )}
 
-       {blog && sponsor && (
+      {blog && sponsor && (
         <SponsorGate sponsor={sponsor} articleId={id} />
       )}
     </main>
